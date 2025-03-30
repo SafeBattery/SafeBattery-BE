@@ -1,15 +1,14 @@
 package sejong.capstone.safebattery.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.domain.Record;
 
 import java.util.List;
 
-public interface PemfcRepository extends JpaRepository<Pemfc, Long> {
+public interface RecordRepository extends JpaRepository<Record, Long> {
     //save
     //findById
     //findAll
-    //delete
-    List<Pemfc> findAllByClient(Client client);
+    List<Record> findAllByPemfc(Pemfc pemfc);
 }

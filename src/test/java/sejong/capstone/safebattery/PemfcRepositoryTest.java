@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 
 import java.util.NoSuchElementException;
@@ -17,58 +19,91 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 public class PemfcRepositoryTest {
     @Autowired
-    PemfcRepository repository;
+    ClientRepository clientRepository;
+    @Autowired
+    PemfcRepository pemfcRepository;
 
     @Test
     public void create() {
         //given
-        Pemfc pemfc = new Pemfc(1.047, 0.956, 0.112, 0.107,
-                7.749, 1.052, 94.016, 100.098,
-        0.96, 0.556, 1.059, 0.677,
-                14.691, -64762.981, 34.011, 14.584,
-                29.724, 18.663, 42.509,
-        64.992, 0.024, 0.002, 0, 0);
+        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Pemfc pemfc = new Pemfc(client);
 
         //when
-        Pemfc savedRow = repository.save(pemfc);
+        clientRepository.save(client);
+        Pemfc savedPemfc = pemfcRepository.save(pemfc);
 
         //then
-        assertThat(savedRow.getTsec()).isEqualTo(1.047);
+        assertThat(savedPemfc.getClient()).isEqualTo(client);
     }
 
     @Test
     public void read() {
         //given
-        Pemfc pemfc = new Pemfc(1.047, 0.956, 0.112, 0.107,
-                7.749, 1.052, 94.016, 100.098,
-                0.96, 0.556, 1.059, 0.677,
-                14.691, -64762.981, 34.011, 14.584,
-                29.724, 18.663, 42.509,
-                64.992, 0.024, 0.002, 0, 0);
-        Pemfc savedRow = repository.save(pemfc);
+        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Pemfc pemfc = new Pemfc(client);
+        Pemfc savedPemfc = pemfcRepository.save(pemfc);
 
         //when
-        Optional<Pemfc> findRow = repository.findById(savedRow.getId());
-        Optional<Pemfc> noSuchRow = repository.findById(-1L);
+        Optional<Pemfc> findClient = pemfcRepository.findById(savedPemfc.getId());
+        Optional<Pemfc> noSuchClient = pemfcRepository.findById(-1L);
 
         //then
-        assertThat(findRow.orElseThrow().getTsec()).isEqualTo(1.047);
-        assertThatThrownBy(noSuchRow::orElseThrow).isInstanceOf(NoSuchElementException.class);
+        assertThat(findClient.orElseThrow().getClient()).isEqualTo(client);
+        assertThatThrownBy(noSuchClient::orElseThrow).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
     public void readAll() {
         //given
-        Pemfc pemfc1 = new Pemfc(1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
-        Pemfc pemfc2 = new Pemfc(2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
-        Pemfc pemfc3 = new Pemfc(3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
+        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Pemfc pemfc1 = new Pemfc(client);
+        Pemfc pemfc2 = new Pemfc(client);
+        Pemfc pemfc3 = new Pemfc(client);
 
         //when
-        repository.save(pemfc1);
-        repository.save(pemfc2);
-        repository.save(pemfc3);
+        clientRepository.save(client);
+        Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
+        Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
+        Pemfc savedPemfc3 = pemfcRepository.save(pemfc3);
 
         //then
-        assertThat(repository.findAll().size()).isEqualTo(3);
+        assertThat(pemfcRepository.findAll().size()).isEqualTo(3);
+    }
+
+    @Test
+    public void readAllByClient() {
+        //given
+        Client client1 = new Client("asdf", "1234", "Gildong Hong");
+        Client client2 = new Client("fdsa", "4321", "Baksa Hong");
+        Pemfc pemfc1 = new Pemfc(client1);
+        Pemfc pemfc2 = new Pemfc(client1);
+        Pemfc pemfc3 = new Pemfc(client2);
+
+        //when
+        clientRepository.save(client1);
+        clientRepository.save(client2);
+        Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
+        Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
+        Pemfc savedPemfc3 = pemfcRepository.save(pemfc3);
+
+        //then
+        assertThat(pemfcRepository.findAllByClient(client1).size()).isEqualTo(2);
+        assertThat(pemfcRepository.findAllByClient(client2).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void delete() {
+        //given
+        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Pemfc pemfc = new Pemfc(client);
+        pemfcRepository.save(pemfc);
+
+        //when
+        pemfcRepository.delete(pemfc);
+        Optional<Pemfc> findClient = pemfcRepository.findById(pemfc.getId());
+
+        //then
+        assertThatThrownBy(findClient::orElseThrow).isInstanceOf(NoSuchElementException.class);
     }
 }

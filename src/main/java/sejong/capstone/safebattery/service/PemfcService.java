@@ -3,7 +3,9 @@ package sejong.capstone.safebattery.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.dto.PemfcUpdateDto;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 
 import java.util.List;
@@ -15,15 +17,29 @@ import java.util.Optional;
 public class PemfcService {
     private final PemfcRepository pemfcRepository;
 
-    public Pemfc addNewRow(Pemfc pemfc) {
+    public Pemfc addNewPemfc(Pemfc pemfc) {
         return pemfcRepository.save(pemfc);
     }
 
-    public Optional<Pemfc> searchRowById(Long id) {
+    public Optional<Pemfc> searchPemfcById(Long id) {
         return pemfcRepository.findById(id);
     }
 
-    public List<Pemfc> searchAllRows() {
+    public List<Pemfc> searchAllPemfcs() {
         return pemfcRepository.findAll();
+    }
+
+    public List<Pemfc> searchPemfcsByClient(Client client) {
+        return pemfcRepository.findAllByClient(client);
+    }
+
+    public void updatePemfcById(Long id, PemfcUpdateDto updateParams) {
+        Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
+        pemfc.setClient(updateParams.getClient());
+    }
+
+    public void deletePemfcById(Long id) {
+        Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
+        pemfcRepository.delete(pemfc);
     }
 }

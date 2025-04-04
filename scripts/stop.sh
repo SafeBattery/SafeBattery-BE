@@ -1,7 +1,7 @@
 # stop.sh
 
 PROJECT_ROOT="/home/ubuntu/deploy"
-JAR_FILE="$PROJECT_ROOT/server-0.0.1-SNAPSHOT.jar"
+JAR_FILE="$PROJECT_ROOT/app.jar"
 
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 

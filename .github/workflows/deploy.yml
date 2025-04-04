@@ -1,0 +1,60 @@
+name: Deploy Backend Server to AWS via CodeDeploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET: safebattery-s3
+  APPLICATION_NAME: SafeBattery-CodeDeploy-BE
+  DEPLOYMENT_GROUP: SafeBattery-CodeDeploy-BE-Group
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+ 
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Create .env file
+        run: |
+          echo "DB_URL=${{ secrets.MYSQL_URL }}" >> .env
+          echo "DB_USERNAME=${{ secrets.MYSQL_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+
+      - name: Prepare deployment artifact
+        run: |
+          zip -r deployment-${{ github.sha }}.zip .
+
+      - name: Upload artifact to S3
+        run: |
+          aws s3 cp deployment-${{ github.sha }}.zip s3://$S3_BUCKET/deployment-${{ github.sha }}.zip --region $AWS_REGION
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Create CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name $APPLICATION_NAME \
+            --deployment-group-name $DEPLOYMENT_GROUP \
+            --s3-location bucket=$S3_BUCKET,key=deployment-${{ github.sha }}.zip,bundleType=zip \
+            --region $AWS_REGION
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

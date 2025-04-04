@@ -37,9 +37,19 @@ jobs:
           echo "DB_USERNAME=${{ secrets.MYSQL_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
 
+#      - name: Prepare deployment artifact
+#        run: |
+#          zip -r deployment-${{ github.sha }}.zip .
+
       - name: Prepare deployment artifact
         run: |
-          zip -r deployment-${{ github.sha }}.zip .
+          mkdir deploy
+          cp build/libs/*.jar deploy/app.jar   # 여기서 이름 고정
+          cp appspec.yml deploy/
+          cp .env deploy/
+          cp -r scripts/ deploy/scripts/
+          cd deploy
+          zip -r ../deployment-${{ github.sha }}.zip .
 
       - name: Upload artifact to S3
         run: |

@@ -14,7 +14,8 @@ set -a
 source $PROJECT_ROOT/.env
 set +a
 
-# build 파일 복사ㅇ
+# build 파일 복사
+# 아 공백
 #echo "$TIME_NOW > $JAR_FILE 파일 복사" >> $DEPLOY_LOG
 #cp $PROJECT_ROOT/build/libs/*.jar $JAR_FILE
 

@@ -48,6 +48,8 @@ jobs:
           cp appspec.yml deploy/
           cp .env deploy/
           cp -r scripts/ deploy/scripts/
+          echo "📦 deploy 디렉토리 내용:"
+          ls -al deploy
           cd deploy
           zip -r ../deployment-${{ github.sha }}.zip .
 

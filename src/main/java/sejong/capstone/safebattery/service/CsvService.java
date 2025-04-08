@@ -1,4 +1,4 @@
-package sejong.capstone.safebattery;
+package sejong.capstone.safebattery.service;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -7,28 +7,35 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.*;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
-import sejong.capstone.safebattery.service.RecordService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class PemfcCsvReader {
+public class CsvService {
 
     private final RecordService recordService;
+    private final PemfcService pemfcService;
+    private final ScheduledExecutorService schedulerService = Executors.newSingleThreadScheduledExecutor();
+
 
     private static final String CSV_FILE_PATH = "src/main/resources/full_test_data.csv";
     // 현재까지 읽은 행의 인덱스(0부터 시작)
     private int currentLine = 0;
+    private boolean started = false;
     List<Record> csvDataList;
 
     @PostConstruct
     public void init() {
-        System.out.println("CSV 파일을 읽는 작업 시작...");
+        log.info("CSV 파일을 읽는 작업 시작...");
         try (Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH))) {
             // CsvToBeanBuilder를 사용하여 CSV 데이터를 객체 리스트로 파싱
             CsvToBean<Record> csvToBean = new CsvToBeanBuilder<Record>(reader)
@@ -38,22 +45,31 @@ public class PemfcCsvReader {
 
             csvDataList = csvToBean.parse();
         } catch (IOException e) {
-            System.err.println("CSV 파일 읽기 중 오류 발생: " + e.getMessage());
+            log.error("CSV 파일 읽기 중 오류 발생: {}", e.getMessage());
             e.printStackTrace();
         }
     }
 
-    @Scheduled(fixedRate = 3000)  // 3000밀리초, 즉 3초마다 실행
-    public void readCsvFile() {
-        // 아직 읽지 않은 행이 있다면 한 행만 출력
-        if (currentLine < csvDataList.size()) {
-            Record record = csvDataList.get(currentLine);
-            // Record를 저장하는 서비스 코드를 호출
-            recordService.addNewRecord(record);
+    public void startScheduler(Long pemfcId) {
+        if (!started) {
+            init(); // 처음 시작 시만 파일 읽기
+            Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+            schedulerService.scheduleAtFixedRate(
+                    () -> processNextLine(pemfc), 0, 3, TimeUnit.SECONDS);
+            started = true;
+            log.info("스케줄러 시작됨");
+        }
+    }
 
-            currentLine++;  // 다음 행으로 인덱스 증가
+    private void processNextLine(Pemfc pemfc) {
+        if (csvDataList != null && currentLine < csvDataList.size()) {
+            Record record = csvDataList.get(currentLine);
+            record.setPemfc(pemfc);
+            recordService.addNewRecord(record);
+            log.info("[{}] 레코드 처리 완료", currentLine);
+            currentLine++;
         } else {
-            System.out.println("더 이상 읽을 데이터가 없습니다.");
+            log.info("모든 데이터를 처리했습니다.");
         }
     }
 }

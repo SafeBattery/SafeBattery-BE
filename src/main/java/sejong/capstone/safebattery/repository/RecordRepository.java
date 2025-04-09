@@ -11,4 +11,5 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     //findById
     //findAll
     List<Record> findAllByPemfc(Pemfc pemfc);
+    List<Record> findTop600ByPemfcOrderByTsecDesc(Pemfc pemfc);
 }

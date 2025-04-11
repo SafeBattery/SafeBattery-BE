@@ -1,5 +1,6 @@
 package sejong.capstone.safebattery.controller;
 
+import java.util.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import reactor.core.scheduler.Schedulers;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Prediction;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.dto.PredictRequest;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
 import sejong.capstone.safebattery.service.PemfcService;
 import sejong.capstone.safebattery.service.PredictionService;
@@ -47,20 +49,43 @@ public class PemfcController {
             List<Record> records = recordService.search600RecordsByPemfc(pemfc);
             List<RecordResponseDto> aiServerRequestData = records.stream()
                     .map(RecordResponseDto::new).toList();
+
+            List<List<Double>> inputList = new ArrayList<>();
+            //임시 코드
+            for (int i = 0; i < 600; i++) {
+                List<Double> list = new ArrayList<>();
+                for (int j = 0; j < 9; j++) {
+                    list.add(Math.random()); // 예시로 랜덤 실수값
+                }
+                inputList.add(list);
+            }
+
+            PredictRequest requestData = new PredictRequest(inputList, 0.4);
             webClient.post()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/api/pemfc/{pemfcId}/predict")
-                            .build(pemfc.getId())) // pemfcId 경로에 삽입
-                    .bodyValue(aiServerRequestData)
+                                .uri("/predict") //
+                    .bodyValue(requestData)
                     .retrieve()
-                    .bodyToMono(Prediction.class) // 응답 타입
+                    .bodyToMono(Object.class) // 응답 타입
                     .publishOn(Schedulers.boundedElastic()) // 블로킹-safe한 스레드풀로 이동
                     .doOnNext(response -> { // 블로킹 가능성 있는 코드
                         log.info("response : {}", response);
-                        predictionService.addNewPrediction(response);
                     })
                     .block(); // 실제 요청 실행
+            //임시 코드 종료
                     //.subscribe(); // 실제 요청 실행
+//                    .uri(uriBuilder -> uriBuilder
+//                            .path("/api/pemfc/{pemfcId}/predict")
+//                            .build(pemfc.getId())) // pemfcId 경로에 삽입
+//                    .bodyValue(aiServerRequestData)
+//                    .retrieve()
+//                    .bodyToMono(Prediction.class) // 응답 타입
+//                    .publishOn(Schedulers.boundedElastic()) // 블로킹-safe한 스레드풀로 이동
+//                    .doOnNext(response -> { // 블로킹 가능성 있는 코드
+//                        log.info("response : {}", response);
+//                        predictionService.addNewPrediction(response);
+//                    })
+//                    .block(); // 실제 요청 실행
+//                    //.subscribe(); // 실제 요청 실행
             return ResponseEntity.ok("record와 prediction이 추가되었습니다.");
         } else {
             return ResponseEntity.ok("record가 추가되었습니다.");

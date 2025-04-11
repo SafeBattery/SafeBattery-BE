@@ -117,4 +117,29 @@ public class RecordRepositoryTest {
         //System.out.println(recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc).toString());
         assertThat(recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc).size()).isEqualTo(600);
     }
+
+    @Test
+    public void countAllByPemfc() {
+        //given
+        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Pemfc pemfc1 = new Pemfc(client);
+        Pemfc pemfc2 = new Pemfc(client);
+        Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
+        Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
+        Record record1 = new Record(pemfc1, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
+        Record record2 = new Record(pemfc1, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
+        Record record3 = new Record(pemfc2, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0);
+
+        //when
+        clientRepository.save(client);
+        pemfcRepository.save(pemfc1);
+        pemfcRepository.save(pemfc2);
+        recordRepository.save(record1);
+        recordRepository.save(record2);
+        recordRepository.save(record3);
+
+        //then
+        assertThat(recordRepository.countByPemfc(savedPemfc1)).isEqualTo(2);
+        assertThat(recordRepository.countByPemfc(savedPemfc2)).isEqualTo(1);
+    }
 }

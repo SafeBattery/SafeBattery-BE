@@ -2,6 +2,7 @@ package sejong.capstone.safebattery.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
@@ -24,14 +25,14 @@ public class ClientController {
     private final PemfcService pemfcService;
     private final RecordService recordService;
 
-    @GetMapping("/{clientId}")
+    @GetMapping("/{clientId}/pemfc/all")
     public List<PemfcResponseDto> getPemfcListOfClient(@PathVariable("clientId") Long clientId) {
         Client client = clientService.searchClientById(clientId).orElseThrow();
         return pemfcService.searchPemfcsByClient(client).stream().map(
                 PemfcResponseDto::new).toList();
     }
 
-    @GetMapping("/{clientId}/{pemfcId}")
+    @GetMapping("/{clientId}/pemfc/{pemfcId}")
     public PemfcResponseDto getPemfcOfClientByPemfcId(
             @PathVariable("clientId") Long clientId,
             @PathVariable("pemfcId") Long pemfcId) {
@@ -42,43 +43,11 @@ public class ClientController {
         return new PemfcResponseDto(pemfc);
     }
 
-    @PostMapping("/{clientId}")
-    public String addNewPemfcOfClient(@PathVariable("clientId") Long clientId) {
+    @PostMapping("/{clientId}/pemfc")
+    public ResponseEntity<String> addNewPemfcOfClient(@PathVariable("clientId") Long clientId) {
         Client client = clientService.searchClientById(clientId).orElseThrow();
         pemfcService.addNewPemfc(new Pemfc(client));
 
-        return "pemfc add success";
-    }
-
-    @DeleteMapping("/{clientId}/{pemfcId}")
-    public String DeletePemfcOfClient(
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("pemfcId") Long pemfcId) {
-
-        pemfcService.deletePemfcById(pemfcId);
-
-        return "pemfc delete success";
-    }
-
-    @GetMapping("/{clientId}/{pemfcId}/history")
-    public List<RecordResponseDto> getRecordsOfPemfc(
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("pemfcId") Long pemfcId) {
-        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        return recordService.searchRecordsByPemfc(pemfc).stream()
-                .map(RecordResponseDto::new).toList();
-    }
-
-    @GetMapping("/{clientId}/{pemfcId}/prediction")
-    public String getPredictionOfPemfc(
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("pemfcId") Long pemfcId) {
-        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        List<RecordResponseDto> records = recordService.searchRecordsByPemfc(pemfc)
-                .stream().map(RecordResponseDto::new).toList();
-
-        //prediction logic...
-
-        return "normal";
+        return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
     }
 }

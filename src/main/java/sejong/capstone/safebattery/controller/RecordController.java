@@ -18,7 +18,7 @@ import java.util.List;
 public class RecordController {
     private final RecordService service;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public RecordResponseDto createNewRecord(@Valid @ModelAttribute Record record,
                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -28,12 +28,12 @@ public class RecordController {
         return new RecordResponseDto(service.addNewRecord(record));
     }
 
-    @GetMapping("/read/{id}")
-    public RecordResponseDto searchRecordById(@PathVariable("id") Long id) {
+    @GetMapping("/{recordId}")
+    public RecordResponseDto searchRecordById(@PathVariable("recordId") Long id) {
         return new RecordResponseDto(service.searchRecordById(id).orElseThrow());
     }
 
-    @GetMapping("/read/all")
+    @GetMapping("/all")
     public List<RecordResponseDto> searchAllRecords() {
         return service.searchAllRecords().stream()
                 .map(RecordResponseDto::new).toList();

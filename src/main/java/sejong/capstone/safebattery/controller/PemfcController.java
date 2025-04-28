@@ -9,9 +9,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
+import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.domain.Prediction;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.dto.PemfcResponseDto;
 import sejong.capstone.safebattery.dto.PredictRequest;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
 import sejong.capstone.safebattery.service.PemfcService;
@@ -30,8 +31,40 @@ public class PemfcController {
     private final RecordService recordService;
     private final PredictionService predictionService;
 
-    @PostMapping("/{pemfcId}/record")
-    public ResponseEntity<String> addNewRecordAndGetPredict
+    @GetMapping("{pemfcId}")
+    public PemfcResponseDto getPemfcById(
+            @PathVariable("pemfcId") Long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        return new PemfcResponseDto(pemfc);
+    }
+
+    @DeleteMapping("/{pemfcId}/delete")
+    public ResponseEntity<String> DeletePemfcOfClient(
+            @PathVariable("pemfcId") Long pemfcId) {
+
+        pemfcService.deletePemfcById(pemfcId);
+
+        return ResponseEntity.ok("pemfc가 성공적으로 삭제되었습니다.");
+    }
+
+    @GetMapping("/{pemfcId}/record/all")
+    public List<RecordResponseDto> getRecordsOfPemfc(
+            @PathVariable("pemfcId") Long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        return recordService.searchRecordsByPemfc(pemfc).stream()
+                .map(RecordResponseDto::new).toList();
+    }
+
+    @GetMapping("/{pemfcId}/record/recent600")
+    public List<RecordResponseDto> getRecent600RecordsOfPemfc(
+            @PathVariable("pemfcId") Long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        return recordService.search600RecordsByPemfc(pemfc).stream()
+                .map(RecordResponseDto::new).toList();
+    }
+
+    @PostMapping("/{pemfcId}/prediction")
+    public ResponseEntity<String> addNewRecordAndGetPrediction
             (@PathVariable Long pemfcId,
              @Valid @ModelAttribute Record record,
              BindingResult bindingResult) {

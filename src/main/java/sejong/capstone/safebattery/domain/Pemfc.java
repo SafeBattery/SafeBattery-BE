@@ -5,6 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import sejong.capstone.safebattery.enums.State;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -19,9 +22,21 @@ public class Pemfc {
     //@JoinColumn(name = "client_id") //생략 가능
     private Client client;
 
+    private State state;
+    private double lat;
+    private double lng;
+    private String modelName;
+    LocalDate manufacturedDate;
+
     public Pemfc() {}
 
-    public Pemfc(Client client) {
+    public Pemfc(Client client, State state, double lat, double lng,
+                 String modelName, LocalDate manufacturedDate) {
         this.client = client;
+        this.state = state;
+        this.lat = lat;
+        this.lng = lng;
+        this.modelName = modelName;
+        this.manufacturedDate = manufacturedDate;
     }
 }

@@ -12,9 +12,11 @@ import reactor.core.scheduler.Schedulers;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.dto.PemfcRequestDto;
 import sejong.capstone.safebattery.dto.PemfcResponseDto;
 import sejong.capstone.safebattery.dto.PredictRequest;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
+import sejong.capstone.safebattery.service.ClientService;
 import sejong.capstone.safebattery.service.PemfcService;
 import sejong.capstone.safebattery.service.PredictionService;
 import sejong.capstone.safebattery.service.RecordService;
@@ -27,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PemfcController {
     private final WebClient webClient;
+    private final ClientService clientService;
     private final PemfcService pemfcService;
     private final RecordService recordService;
     private final PredictionService predictionService;
@@ -36,6 +39,20 @@ public class PemfcController {
             @PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         return new PemfcResponseDto(pemfc);
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<String> addNewPemfc(@Valid @ModelAttribute PemfcRequestDto form,
+                                                      BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            //결측치 발생 시 수행 로직 추가...
+            log.info("Invalid pemfc: {}", bindingResult.getAllErrors());
+        }
+        Client client = clientService.searchClientById(form.getClientId()).orElseThrow();
+        pemfcService.addNewPemfc(new Pemfc(client, form.getState(), form.getLat(), form.getLng(),
+                form.getModelName(), form.getManufacturedDate()));
+
+        return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
     }
 
     @DeleteMapping("/{pemfcId}/delete")

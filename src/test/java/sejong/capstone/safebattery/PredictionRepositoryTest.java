@@ -7,10 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Prediction;
+import sejong.capstone.safebattery.enums.State;
 import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 import sejong.capstone.safebattery.repository.PredictionRepository;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -31,7 +33,7 @@ public class PredictionRepositoryTest {
     public void create() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client);
+        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
 
         //when
@@ -47,7 +49,7 @@ public class PredictionRepositoryTest {
     public void read() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client);
+        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
         Prediction savedPrediction = predictionRepository.save(prediction);
 
@@ -64,8 +66,8 @@ public class PredictionRepositoryTest {
     public void readAllByPemfc() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client);
-        Pemfc pemfc2 = new Pemfc(client);
+        Pemfc pemfc1 = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
         Prediction prediction1 = new Prediction(pemfc1, 1.047, 1.0);

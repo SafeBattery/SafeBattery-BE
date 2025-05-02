@@ -6,9 +6,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.enums.State;
 import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -27,7 +29,7 @@ public class PemfcRepositoryTest {
     public void create() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client);
+        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client);
@@ -41,7 +43,7 @@ public class PemfcRepositoryTest {
     public void read() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client);
+        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc = pemfcRepository.save(pemfc);
 
         //when
@@ -57,9 +59,9 @@ public class PemfcRepositoryTest {
     public void readAll() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client);
-        Pemfc pemfc2 = new Pemfc(client);
-        Pemfc pemfc3 = new Pemfc(client);
+        Pemfc pemfc1 = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client);
@@ -76,9 +78,9 @@ public class PemfcRepositoryTest {
         //given
         Client client1 = new Client("Gildong Hong");
         Client client2 = new Client("Baksa Hong");
-        Pemfc pemfc1 = new Pemfc(client1);
-        Pemfc pemfc2 = new Pemfc(client1);
-        Pemfc pemfc3 = new Pemfc(client2);
+        Pemfc pemfc1 = new Pemfc(client1, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client1, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client2, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client1);
@@ -96,7 +98,7 @@ public class PemfcRepositoryTest {
     public void delete() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client);
+        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         pemfcRepository.save(pemfc);
 
         //when

@@ -42,12 +42,4 @@ public class ClientController {
                 .findFirst().orElseThrow();
         return new PemfcResponseDto(pemfc);
     }
-
-    @PostMapping("/{clientId}/pemfc")
-    public ResponseEntity<String> addNewPemfcOfClient(@PathVariable("clientId") Long clientId) {
-        Client client = clientService.searchClientById(clientId).orElseThrow();
-        pemfcService.addNewPemfc(new Pemfc(client));
-
-        return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
-    }
 }

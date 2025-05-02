@@ -26,9 +26,9 @@ public class ClientServiceTest {
     @Test
     public void 모든클라이언트찾기() {
         //given
-        Client client1 = new Client("asdf", "1234","Gildong Hong");
-        Client client2 = new Client("asdf", "1234","Gildong Kim");
-        Client client3 = new Client("asdf", "1234","Baksa Hong");
+        Client client1 = new Client("Gildong Hong");
+        Client client2 = new Client("Gildong Kim");
+        Client client3 = new Client("Baksa Hong");
 
         //when
         clientService.addNewClient(client1);
@@ -42,9 +42,9 @@ public class ClientServiceTest {
     @Test
     public void 클라이언트수정() {
         //given
-        Client client = new Client("asdf", "1234","Gildong Hong");
+        Client client = new Client("Gildong Hong");
         clientService.addNewClient(client);
-        ClientUpdateDto updateParams = new ClientUpdateDto("asdf", "1234", "Baksa Hong");
+        ClientUpdateDto updateParams = new ClientUpdateDto("Baksa Hong");
 
         //when
         clientService.updateClientById(client.getId(), updateParams);
@@ -57,7 +57,7 @@ public class ClientServiceTest {
     @Test
     public void 클라이언트삭제() {
         //given
-        Client client = new Client("asdf", "1234","Gildong Hong");
+        Client client = new Client("Gildong Hong");
         clientService.addNewClient(client);
 
         //when

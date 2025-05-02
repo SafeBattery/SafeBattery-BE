@@ -18,17 +18,11 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String loginId;
-    private String password;
-
     private String name;
 
     public Client() {}
 
-    public Client(String loginId, String password, String name) {
-        this.loginId = loginId;
-        this.password = password;
+    public Client(String name) {
         this.name = name;
     }
 }

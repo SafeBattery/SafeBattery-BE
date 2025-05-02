@@ -26,7 +26,7 @@ public class PemfcRepositoryTest {
     @Test
     public void create() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
 
         //when
@@ -40,7 +40,7 @@ public class PemfcRepositoryTest {
     @Test
     public void read() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
         Pemfc savedPemfc = pemfcRepository.save(pemfc);
 
@@ -56,7 +56,7 @@ public class PemfcRepositoryTest {
     @Test
     public void readAll() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc1 = new Pemfc(client);
         Pemfc pemfc2 = new Pemfc(client);
         Pemfc pemfc3 = new Pemfc(client);
@@ -74,8 +74,8 @@ public class PemfcRepositoryTest {
     @Test
     public void readAllByClient() {
         //given
-        Client client1 = new Client("asdf", "1234", "Gildong Hong");
-        Client client2 = new Client("fdsa", "4321", "Baksa Hong");
+        Client client1 = new Client("Gildong Hong");
+        Client client2 = new Client("Baksa Hong");
         Pemfc pemfc1 = new Pemfc(client1);
         Pemfc pemfc2 = new Pemfc(client1);
         Pemfc pemfc3 = new Pemfc(client2);
@@ -95,7 +95,7 @@ public class PemfcRepositoryTest {
     @Test
     public void delete() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
         pemfcRepository.save(pemfc);
 

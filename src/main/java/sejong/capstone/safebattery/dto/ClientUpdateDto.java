@@ -10,15 +10,11 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ClientUpdateDto {
-    private String loginId;
-    private String password;
     private String name;
 
     public ClientUpdateDto() {}
 
-    public ClientUpdateDto(String loginId, String password, String name) {
-        this.loginId = loginId;
-        this.password = password;
+    public ClientUpdateDto(String name) {
         this.name = name;
     }
 }

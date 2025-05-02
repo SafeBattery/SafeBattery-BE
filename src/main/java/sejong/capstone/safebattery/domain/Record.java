@@ -42,6 +42,8 @@ public class Record {
     private double m_H2_write;
     private int Heater_power;
     private double i_write;
+    private double lat;
+    private double lng;
 
     public Record() {
     }
@@ -50,7 +52,8 @@ public class Record {
                   double RH_Air, double RH_H2, double p_Air_supply, double p_H2_supply, double p_Air_inlet,
                   double p_H2_inlet, double t_1, double t_2, double t_3, double t_4, double t_Air_inlet,
                   double t_H2_inlet, double t_Stack_inlet, double t_Heater, double m_Air_write,
-                  double m_H2_write, int heater_power, double i_write) {
+                  double m_H2_write, int heater_power, double i_write,
+                  double lat, double lng) {
         this.pemfc = pemfc;
         this.tsec = tsec;
         this.U_totV = u_totV;
@@ -76,5 +79,7 @@ public class Record {
         this.m_H2_write = m_H2_write;
         this.Heater_power = heater_power;
         this.i_write = i_write;
+        this.lat = lat;
+        this.lng = lng;
     }
 }

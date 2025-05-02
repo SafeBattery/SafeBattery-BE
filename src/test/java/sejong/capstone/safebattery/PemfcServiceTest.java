@@ -27,7 +27,7 @@ public class PemfcServiceTest {
     @Test
     public void 모든Pemfc찾기() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc1 = new Pemfc(client);
         Pemfc pemfc2 = new Pemfc(client);
         Pemfc pemfc3 = new Pemfc(client);
@@ -45,8 +45,8 @@ public class PemfcServiceTest {
     @Test
     public void 클라이언트의모든Pemfc찾기() {
         //given
-        Client client1 = new Client("asdf", "1234", "Gildong Hong");
-        Client client2 = new Client("fdsa", "4321", "Baksa Hong");
+        Client client1 = new Client("Gildong Hong");
+        Client client2 = new Client("Baksa Hong");
         Pemfc pemfc1 = new Pemfc(client1);
         Pemfc pemfc2 = new Pemfc(client1);
         Pemfc pemfc3 = new Pemfc(client2);
@@ -66,8 +66,8 @@ public class PemfcServiceTest {
     @Test
     public void 클라이언트수정() {
         //given
-        Client client1 = new Client("asdf", "1234", "Gildong Hong");
-        Client client2 = new Client("asddff", "12df34", "Baksa Hong");
+        Client client1 = new Client("Gildong Hong");
+        Client client2 = new Client("Baksa Hong");
         Pemfc pemfc = new Pemfc(client1);
         pemfcService.addNewPemfc(pemfc);
         PemfcUpdateDto updateParams = new PemfcUpdateDto(client2);
@@ -83,7 +83,7 @@ public class PemfcServiceTest {
     @Test
     public void 클라이언트삭제() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
         pemfcService.addNewPemfc(pemfc);
 

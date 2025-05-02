@@ -30,7 +30,7 @@ public class PredictionRepositoryTest {
     @Test
     public void create() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
 
@@ -46,7 +46,7 @@ public class PredictionRepositoryTest {
     @Test
     public void read() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc = new Pemfc(client);
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
         Prediction savedPrediction = predictionRepository.save(prediction);
@@ -63,7 +63,7 @@ public class PredictionRepositoryTest {
     @Test
     public void readAllByPemfc() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Pemfc pemfc1 = new Pemfc(client);
         Pemfc pemfc2 = new Pemfc(client);
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);

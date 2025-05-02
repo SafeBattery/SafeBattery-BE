@@ -21,7 +21,7 @@ public class ClientRepositoryTest {
     @Test
     public void create() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
 
         //when
         Client savedClient = clientRepository.save(client);
@@ -33,7 +33,7 @@ public class ClientRepositoryTest {
     @Test
     public void read() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Client savedClient = clientRepository.save(client);
 
         //when
@@ -41,16 +41,16 @@ public class ClientRepositoryTest {
         Optional<Client> noSuchClient = clientRepository.findById(-1L);
 
         //then
-        assertThat(findClient.orElseThrow().getLoginId()).isEqualTo("asdf");
+        assertThat(findClient.orElseThrow().getName()).isEqualTo("Gildong Hong");
         assertThatThrownBy(noSuchClient::orElseThrow).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
     public void readAll() {
         //given
-        Client client1 = new Client("asdf", "1234", "Gildong Hong");
-        Client client2 = new Client("asdf", "1234", "Gildong Hong");
-        Client client3 = new Client("asdf", "1234", "Gildong Hong");
+        Client client1 = new Client("Gildong Hong");
+        Client client2 = new Client("Gildong Hong");
+        Client client3 = new Client("Gildong Hong");
 
         //when
         clientRepository.save(client1);
@@ -66,7 +66,7 @@ public class ClientRepositoryTest {
     @Test
     public void delete() {
         //given
-        Client client = new Client("asdf", "1234", "Gildong Hong");
+        Client client = new Client("Gildong Hong");
         Client savedClient = clientRepository.save(client);
 
         //when

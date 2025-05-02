@@ -32,8 +32,6 @@ public class ClientService {
 
     public void updateClientById(Long id, ClientUpdateDto updateParams) {
         Client client = clientRepository.findById(id).orElseThrow();
-        client.setLoginId(updateParams.getLoginId());
-        client.setPassword(updateParams.getPassword());
         client.setName(updateParams.getName());
     }
 

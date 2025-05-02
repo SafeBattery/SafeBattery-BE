@@ -32,6 +32,9 @@ public class RecordResponseDto {
     private double m_H2_write;
     private int Heater_power;
     private double i_write;
+    private double lat;
+    private double lng;
+
 
     public RecordResponseDto() {}
 
@@ -61,6 +64,8 @@ public class RecordResponseDto {
         this.m_H2_write = record.getM_H2_write();
         this.Heater_power = record.getHeater_power();
         this.i_write = record.getI_write();
+        this.lat = record.getLat();
+        this.lng = record.getLng();
     }
 }
 

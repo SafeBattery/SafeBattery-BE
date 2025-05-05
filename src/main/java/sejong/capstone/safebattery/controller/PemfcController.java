@@ -1,8 +1,5 @@
 package sejong.capstone.safebattery.controller;
 
-import java.io.IOException;
-import java.util.*;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.scheduler.Schedulers;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
@@ -30,7 +25,6 @@ import java.util.List;
 @RequestMapping("/api/pemfc")
 @RequiredArgsConstructor
 public class PemfcController {
-    private final WebClient webClient;
     private final ClientService clientService;
     private final PemfcService pemfcService;
     private final RecordService recordService;

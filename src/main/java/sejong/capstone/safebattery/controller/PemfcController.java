@@ -1,6 +1,9 @@
 package sejong.capstone.safebattery.controller;
 
+import java.io.IOException;
 import java.util.*;
+
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +81,16 @@ public class PemfcController {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         return recordService.search600RecordsByPemfc(pemfc).stream()
                 .map(RecordResponseDto::new).toList();
+    }
+
+    @GetMapping("/{pemfcId}/csv")
+    public void getRecordCsvOfPemfc(
+            @PathVariable("pemfcId") Long pemfcId,
+            HttpServletResponse response) throws Exception {
+        response.setContentType("text/csv");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"csv_of_pemfc_" + pemfcId + ".csv\"");
+        recordService.makeCsvByRecordsOfPemfc(pemfcId, response.getWriter());
     }
 
     @PostMapping("/{pemfcId}/prediction")

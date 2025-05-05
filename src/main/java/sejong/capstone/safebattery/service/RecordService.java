@@ -2,13 +2,16 @@ package sejong.capstone.safebattery.service;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
-import sejong.capstone.safebattery.dto.RecordCsvDto;
+import sejong.capstone.safebattery.dto.RecordCsvExportDto;
+import sejong.capstone.safebattery.dto.RecordCsvImportDto;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 import sejong.capstone.safebattery.repository.RecordRepository;
 
@@ -56,8 +59,8 @@ public class RecordService {
         InputStream inputStream = new ClassPathResource("full_test_data.csv").getInputStream();
         Reader reader = new InputStreamReader(inputStream);
 
-        CsvToBean<RecordCsvDto> csvToBean = new CsvToBeanBuilder<RecordCsvDto>(reader)
-                .withType(RecordCsvDto.class)
+        CsvToBean<RecordCsvImportDto> csvToBean = new CsvToBeanBuilder<RecordCsvImportDto>(reader)
+                .withType(RecordCsvImportDto.class)
                 .withIgnoreLeadingWhiteSpace(true)
                 .withSeparator(',')
                 .build();
@@ -68,5 +71,21 @@ public class RecordService {
                 .toList();
 
         recordRepository.saveAll(records);
+    }
+
+    public void makeCsvByRecordsOfPemfc(Long pemfcId, Writer writer) throws Exception {
+        Pemfc pemfc = pemfcRepository.findById(pemfcId).orElseThrow(() ->
+                new IllegalArgumentException("Invalid pemfc ID"));
+        List<Record> records = recordRepository.findAllByPemfc(pemfc);
+
+        List<RecordCsvExportDto> dtoList = records.stream()
+                .map(RecordCsvExportDto::new)
+                .toList();
+
+        StatefulBeanToCsv<RecordCsvExportDto> beanToCsv = new StatefulBeanToCsvBuilder<RecordCsvExportDto>(writer)
+                .withApplyQuotesToAll(false)
+                .build();
+
+        beanToCsv.write(dtoList);
     }
 }

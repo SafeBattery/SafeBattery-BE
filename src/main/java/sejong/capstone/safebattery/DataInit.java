@@ -30,8 +30,8 @@ public class DataInit {
     @EventListener(ApplicationReadyEvent.class)
     public void dataInit() throws IOException {
         // SQL 로그 끄기
-//        PrintStream originalOut = System.out; // 저장
-//        System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
+        PrintStream originalOut = System.out; // 저장
+        System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
 
         recordRepository.deleteAll();
         pemfcRepository.deleteAll();
@@ -45,12 +45,8 @@ public class DataInit {
 
         recordService.add600RowsFromCsv(pemfc.getId());
 
-//        for (int i = 0; i < 600; i++) {
-//            Record record = new Record(pemfc, i, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299 + 0.1 * i, 127.276368);
-//            recordRepository.save(record);
-//        }
         // 로그 기능 복원
-//        System.setOut(originalOut);
+        System.setOut(originalOut);
         log.info("Data initialization : completed.");
     }
 }

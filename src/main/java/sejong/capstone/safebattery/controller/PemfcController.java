@@ -17,7 +17,6 @@ import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.PemfcRequestDto;
 import sejong.capstone.safebattery.dto.PemfcResponseDto;
-import sejong.capstone.safebattery.dto.PredictRequest;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
 import sejong.capstone.safebattery.service.ClientService;
 import sejong.capstone.safebattery.service.PemfcService;
@@ -93,11 +92,13 @@ public class PemfcController {
         recordService.makeCsvByRecordsOfPemfc(pemfcId, response.getWriter());
     }
 
+    /**
+     * 현재 pemfc의 고장 상태를 예측, 실제 예측 정보를 가져와서 고장 유형에 따라 전류, 전압, 온도?로 나누어 저장하기
+     * todo : 예측 정보를 가져오는 코드를 서비스 레이어로 이동시키기
+     */
     @PostMapping("/{pemfcId}/prediction")
-    public ResponseEntity<String> addNewRecordAndGetPrediction
-            (@PathVariable Long pemfcId,
-             @Valid @ModelAttribute Record record,
-             BindingResult bindingResult) {
+    public ResponseEntity<String> addNewRecordAndGetPrediction(@PathVariable Long pemfcId,
+        @Valid @ModelAttribute Record record, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             //결측치 발생 시 수행 로직 추가...
@@ -106,49 +107,11 @@ public class PemfcController {
 
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         record.setPemfc(pemfc);
-
         recordService.addNewRecord(record);
+
         if (recordService.countRecordsByPemfc(pemfc) > 600) {
-            List<Record> records = recordService.search600RecordsByPemfc(pemfc);
-            List<RecordResponseDto> aiServerRequestData = records.stream()
-                    .map(RecordResponseDto::new).toList();
-
-            List<List<Double>> inputList = new ArrayList<>();
-            //임시 코드
-            for (int i = 0; i < 600; i++) {
-                List<Double> list = new ArrayList<>();
-                for (int j = 0; j < 9; j++) {
-                    list.add(Math.random()); // 예시로 랜덤 실수값
-                }
-                inputList.add(list);
-            }
-
-            PredictRequest requestData = new PredictRequest(inputList, 0.4);
-            webClient.post()
-                                .uri("/predict") //
-                    .bodyValue(requestData)
-                    .retrieve()
-                    .bodyToMono(Object.class) // 응답 타입
-                    .publishOn(Schedulers.boundedElastic()) // 블로킹-safe한 스레드풀로 이동
-                    .doOnNext(response -> { // 블로킹 가능성 있는 코드
-                        log.info("response : {}", response);
-                    })
-                    .block(); // 실제 요청 실행
-            //임시 코드 종료
-                    //.subscribe(); // 실제 요청 실행
-//                    .uri(uriBuilder -> uriBuilder
-//                            .path("/api/pemfc/{pemfcId}/predict")
-//                            .build(pemfc.getId())) // pemfcId 경로에 삽입
-//                    .bodyValue(aiServerRequestData)
-//                    .retrieve()
-//                    .bodyToMono(Prediction.class) // 응답 타입
-//                    .publishOn(Schedulers.boundedElastic()) // 블로킹-safe한 스레드풀로 이동
-//                    .doOnNext(response -> { // 블로킹 가능성 있는 코드
-//                        log.info("response : {}", response);
-//                        predictionService.addNewPrediction(response);
-//                    })
-//                    .block(); // 실제 요청 실행
-//                    //.subscribe(); // 실제 요청 실행
+            List<Record> aiServerRequestData = recordService.search600RecordsByPemfc(pemfc);
+            predictionService.createPredictions(aiServerRequestData);
             return ResponseEntity.ok("record와 prediction이 추가되었습니다.");
         } else {
             return ResponseEntity.ok("record가 추가되었습니다.");

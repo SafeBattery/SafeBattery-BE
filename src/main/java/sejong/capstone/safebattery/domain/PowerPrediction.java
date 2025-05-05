@@ -9,6 +9,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoltagePrediction extends BasePrediction {
+public class PowerPrediction extends BasePrediction {
 
 }

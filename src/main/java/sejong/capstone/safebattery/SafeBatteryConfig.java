@@ -12,6 +12,7 @@ import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 import sejong.capstone.safebattery.repository.PredictionRepository;
 import sejong.capstone.safebattery.repository.RecordRepository;
+import sejong.capstone.safebattery.service.RecordService;
 
 @Configuration
 public class SafeBatteryConfig {
@@ -46,8 +47,9 @@ public class SafeBatteryConfig {
             RecordRepository recordRepository,
             PemfcRepository pemfcRepository,
             ClientRepository clientRepository,
-            PredictionRepository predictionRepository
+            PredictionRepository predictionRepository,
+            RecordService recordService
     ) {
-        return new DataInit(recordRepository, pemfcRepository, clientRepository, predictionRepository);
+        return new DataInit(recordRepository, pemfcRepository, clientRepository, predictionRepository, recordService);
     }
 }

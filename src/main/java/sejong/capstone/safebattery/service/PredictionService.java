@@ -6,8 +6,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.PredictionState;
 import sejong.capstone.safebattery.domain.Record;
@@ -64,8 +67,21 @@ public class PredictionService {
      */
     private VoltageAndPowerResponseDto requestVoltageAndPowerPredictionToAIServer(
         VoltageAndPowerRequestDto requestDto) {
-        return AIServerWebClient.post().uri("/predict_and_explain").bodyValue(requestDto).retrieve()
-            .bodyToMono(VoltageAndPowerResponseDto.class).block();
+        return AIServerWebClient.post().uri("/predict_and_explain").bodyValue(requestDto)
+            .exchangeToMono(response -> {
+                if (response.statusCode().is2xxSuccessful()) {
+                    // 성공 응답 처리
+                    return response.bodyToMono(VoltageAndPowerResponseDto.class);
+                } else {
+                    // 에러 응답의 본문을 String으로 읽어서 로그로 남기고 예외 던지기
+                    return response.bodyToMono(String.class)
+                        .flatMap(body -> {
+                            log.error("AI 서버 에러 (status: {}): {}", response.statusCode(), body);
+                            return Mono.error(new RuntimeException(
+                                "AI 서버 요청 실패: status=" + response.statusCode()));
+                        });
+                }
+            }).block();
     }
 
     private PredictionState classifyVoltagePredictionByValue(double voltagePrediction) {

@@ -1,7 +1,10 @@
 package sejong.capstone.safebattery.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.util.VoltageAndPowerFeatureSerializer;
 
+@JsonSerialize(using= VoltageAndPowerFeatureSerializer.class)
 public record VoltageAndPowerFeature(
     double iA,
     double P_H2_supply,

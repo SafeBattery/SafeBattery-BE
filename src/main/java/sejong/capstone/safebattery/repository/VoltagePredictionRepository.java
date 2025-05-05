@@ -7,5 +7,5 @@ import sejong.capstone.safebattery.domain.VoltagePrediction;
 
 public interface VoltagePredictionRepository extends JpaRepository<VoltagePrediction, Long> {
 
-    List<VoltagePrediction> findAllByTsecBetween(LocalDateTime startTime, LocalDateTime endTime);
+//    List<VoltagePrediction> findAllByTsecBetween(LocalDateTime startTime, LocalDateTime endTime);
 }

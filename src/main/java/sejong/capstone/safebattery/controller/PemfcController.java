@@ -92,7 +92,7 @@ public class PemfcController {
      */
     @PostMapping("/{pemfcId}/prediction")
     public ResponseEntity<String> addNewRecordAndGetPrediction(@PathVariable Long pemfcId,
-        @Valid @ModelAttribute Record record, BindingResult bindingResult) {
+        @Valid @RequestBody Record record, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             //결측치 발생 시 수행 로직 추가...

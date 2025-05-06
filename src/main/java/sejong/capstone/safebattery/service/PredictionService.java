@@ -1,17 +1,13 @@
 package sejong.capstone.safebattery.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.PredictionState;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.VoltageAndPowerFeature;
@@ -50,7 +46,7 @@ public class PredictionService {
 
         // 3. 결과 저장
         // todo: 예측값을 보고 PredictionState를 정하는 로직이 필요함.
-        Record record = records.get(records.size() - 1);
+        Record record = records.get(0);
         this.savePredictions(voltageAndPowerResponseDto, record);
     }
 

@@ -4,49 +4,57 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.enums.State;
-import sejong.capstone.safebattery.repository.ClientRepository;
-import sejong.capstone.safebattery.repository.PemfcRepository;
-import sejong.capstone.safebattery.repository.PredictionRepository;
-import sejong.capstone.safebattery.repository.RecordRepository;
+import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.RecordService;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class DataInit {
     private final RecordRepository recordRepository;
     private final PemfcRepository pemfcRepository;
     private final ClientRepository clientRepository;
     private final PredictionRepository predictionRepository;
+    private final VoltagePredictionRepository voltagePredictionRepository;
+    private final PowerPredictionRepository powerPredictionRepository;
     private final RecordService recordService;
 
     @EventListener(ApplicationReadyEvent.class)
-    public void dataInit() throws IOException {
-        // SQL 로그 끄기
-        PrintStream originalOut = System.out; // 저장
-        System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
+    public void dataInit() {
+        // output stream 저장
+        PrintStream originalOut = System.out;
+        try {
+            // SQL 로그 끄기
+            System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
 
-        recordRepository.deleteAll();
-        pemfcRepository.deleteAll();
-        clientRepository.deleteAll();
-        predictionRepository.deleteAll();
+            voltagePredictionRepository.deleteAll();
+            powerPredictionRepository.deleteAll();
+            recordRepository.deleteAll();
+            pemfcRepository.deleteAll();
+            clientRepository.deleteAll();
+            predictionRepository.deleteAll();
 
-        Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, State.NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        clientRepository.save(client);
-        pemfcRepository.save(pemfc);
+            Client client = new Client("Gildong Hong");
+            Pemfc pemfc = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+            clientRepository.save(client);
+            pemfcRepository.save(pemfc);
 
-        recordService.add600RowsFromCsv(pemfc.getId());
-
-        // 로그 기능 복원
-        System.setOut(originalOut);
-        log.info("Data initialization : completed.");
+            recordService.add600RowsFromCsv(pemfc.getId());
+            // 로그 기능 복원
+            System.setOut(originalOut);
+            log.info("Data initialization : completed.");
+        } catch(Exception e) {
+            // 로그 기능 복원 후 에러 스택 출력
+            System.setOut(originalOut);
+            e.printStackTrace();
+        }
     }
 }

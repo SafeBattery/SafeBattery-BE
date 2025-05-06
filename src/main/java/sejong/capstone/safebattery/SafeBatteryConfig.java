@@ -8,10 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import sejong.capstone.safebattery.repository.ClientRepository;
-import sejong.capstone.safebattery.repository.PemfcRepository;
-import sejong.capstone.safebattery.repository.PredictionRepository;
-import sejong.capstone.safebattery.repository.RecordRepository;
+import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.RecordService;
 
 @Configuration
@@ -40,16 +37,5 @@ public class SafeBatteryConfig {
                 .baseUrl(aiServerUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
-    }
-
-    @Bean
-    public DataInit dataInit(
-            RecordRepository recordRepository,
-            PemfcRepository pemfcRepository,
-            ClientRepository clientRepository,
-            PredictionRepository predictionRepository,
-            RecordService recordService
-    ) {
-        return new DataInit(recordRepository, pemfcRepository, clientRepository, predictionRepository, recordService);
     }
 }

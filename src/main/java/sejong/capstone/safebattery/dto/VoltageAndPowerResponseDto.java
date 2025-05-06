@@ -21,7 +21,7 @@ public record VoltageAndPowerResponseDto(List<List<Double>> masks, List<Double> 
         return PowerPrediction.builder()
             .pemfc(pemfc)
             .tsec(tsec)
-            .predictedValue(this.prediction.get(0))
+            .predictedValue(this.prediction.get(1))
             .state(predictionState)
             .build();
     }

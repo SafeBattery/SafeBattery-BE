@@ -44,10 +44,15 @@ public class DataInit {
 
             Client client = new Client("Gildong Hong");
             Pemfc pemfc = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+            Pemfc pemfc1 = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc2 = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
             pemfcRepository.save(pemfc);
+            pemfcRepository.save(pemfc1);
+            pemfcRepository.save(pemfc2);
 
             recordService.add600RowsFromCsv(pemfc.getId());
+            recordService.add600RowsFromCsv(pemfc1.getId());
             // 로그 기능 복원
             System.setOut(originalOut);
             log.info("Data initialization : completed.");

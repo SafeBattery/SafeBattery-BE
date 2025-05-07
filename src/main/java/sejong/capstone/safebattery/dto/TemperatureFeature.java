@@ -5,10 +5,15 @@ import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.util.TemperatureFeatureSerializer;
 
 
-// todo: 필드 이름 적절하게 바꾸기
-@JsonSerialize(using= TemperatureFeatureSerializer.class)
-public record TemperatureFeature(double a, double b, double c, double d) {
+@JsonSerialize(using = TemperatureFeatureSerializer.class)
+public record TemperatureFeature(double P_H2_inlet, double P_Air_inlet, double T_Heater,
+                                 double T_Stack_inlet) {
+
     public static TemperatureFeature fromEntity(Record r) {
-        return new TemperatureFeature(0.0, 0.0, 0.0,0.0);
+        return new TemperatureFeature(
+            r.getP_H2_inlet(),
+            r.getP_Air_inlet(),
+            r.getT_Heater(),
+            r.getT_Stack_inlet());
     }
 }

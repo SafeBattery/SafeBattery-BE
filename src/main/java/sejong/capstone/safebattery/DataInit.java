@@ -25,6 +25,7 @@ public class DataInit {
     private final PredictionRepository predictionRepository;
     private final VoltagePredictionRepository voltagePredictionRepository;
     private final PowerPredictionRepository powerPredictionRepository;
+    private final TemperaturePredictionRepository temperaturePredictionRepository;
     private final RecordService recordService;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -37,6 +38,7 @@ public class DataInit {
 
             voltagePredictionRepository.deleteAll();
             powerPredictionRepository.deleteAll();
+            temperaturePredictionRepository.deleteAll();
             recordRepository.deleteAll();
             pemfcRepository.deleteAll();
             clientRepository.deleteAll();

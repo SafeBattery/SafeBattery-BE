@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sejong.capstone.safebattery.domain.PowerPrediction;
+import sejong.capstone.safebattery.domain.TemperaturePrediction;
 import sejong.capstone.safebattery.domain.VoltagePrediction;
 import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.RecordService;
@@ -55,5 +56,10 @@ public class SafeBatteryConfig {
     @Bean
     public PredictionRankRepository<PowerPrediction> powerPredictionRankRepository() {
         return new PredictionRankRepository<>(jdbcTemplate, pemfcRepository, PowerPrediction.class);
+    }
+
+    @Bean
+    public PredictionRankRepository<TemperaturePrediction> temperaturePredictionRankRepository() {
+        return new PredictionRankRepository<>(jdbcTemplate, pemfcRepository, TemperaturePrediction.class);
     }
 }

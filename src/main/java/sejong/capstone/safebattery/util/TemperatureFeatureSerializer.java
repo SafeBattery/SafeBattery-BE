@@ -13,10 +13,10 @@ public class TemperatureFeatureSerializer extends JsonSerializer<TemperatureFeat
         SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeArray(
             new double[]{
-                feature.a(),
-                feature.b(),
-                feature.c(),
-                feature.d(),
+                feature.P_H2_inlet(),
+                feature.P_Air_inlet(),
+                feature.T_Heater(),
+                feature.T_Stack_inlet(),
             }, 0, 4);
     }
 }

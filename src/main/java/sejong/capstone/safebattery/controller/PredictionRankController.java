@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sejong.capstone.safebattery.dto.PowerPredictionRankDto;
 import sejong.capstone.safebattery.dto.VoltagePredictionRankDto;
-import sejong.capstone.safebattery.service.RankService;
+import sejong.capstone.safebattery.service.PredictionRankService;
 
 import java.util.List;
 
@@ -15,15 +15,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
-public class RankController {
-    private final RankService rankService;
+public class PredictionRankController {
+    private final PredictionRankService rankService;
 
     @GetMapping("/voltage")
     public List<VoltagePredictionRankDto> getVoltagePredictionRank() {
-        return rankService.getVoltagePredictionRankOfRecent100Predictions().stream().map(VoltagePredictionRankDto::fromEntity).toList();
+        List<VoltagePredictionRankDto> list = rankService.getVoltagePredictionRanks()
+            .stream().map(VoltagePredictionRankDto::fromEntity).toList();
+        return list;
     }
     @GetMapping("/power")
     public List<PowerPredictionRankDto> getPowerPredictionRank() {
-        return rankService.getPowerPredictionRankOfRecent100Predictions().stream().map(PowerPredictionRankDto::fromEntity).toList();
+        List<PowerPredictionRankDto> list = rankService.getPowerPredictionRanks()
+            .stream().map(PowerPredictionRankDto::fromEntity).toList();
+        return list;
     }
 }

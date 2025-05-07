@@ -26,4 +26,7 @@ public class PemfcResponseDto {
         this.modelName = pemfc.getModelName();
         this.manufacturedDate = pemfc.getManufacturedDate();
     }
+    public static PemfcResponseDto fromEntity(Pemfc pemfc) {
+        return new PemfcResponseDto(pemfc);
+    }
 }

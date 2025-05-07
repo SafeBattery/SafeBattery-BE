@@ -53,6 +53,7 @@ public class DataInit {
 
             recordService.add600RowsFromCsv(pemfc.getId());
             recordService.add600RowsFromCsv(pemfc1.getId());
+            recordService.add600RowsFromCsv(pemfc2.getId());
             // 로그 기능 복원
             System.setOut(originalOut);
             log.info("Data initialization : completed.");

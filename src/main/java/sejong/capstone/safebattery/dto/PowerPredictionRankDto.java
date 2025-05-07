@@ -1,10 +1,10 @@
 package sejong.capstone.safebattery.dto;
 
-import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.repository.PowerPredictionRepository;
+import sejong.capstone.safebattery.dao.PredictionRank;
 
-public record PowerPredictionRankDto(Pemfc pemfc, long count) {
+public record PowerPredictionRankDto(PemfcResponseDto pemfc, long count) {
+
     public static PowerPredictionRankDto fromEntity(PredictionRank rank) {
-        return new PowerPredictionRankDto(rank.pemfc(), rank.count());
+        return new PowerPredictionRankDto(PemfcResponseDto.fromEntity(rank.pemfc()), rank.count());
     }
 }

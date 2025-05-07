@@ -74,8 +74,7 @@ public class PredictionService {
         }).collect(Collectors.toList());
     }
 
-    private List<TemperatureFeature> extractTemperatureFeaturesFromRecords(
-        List<Record> records) {
+    private List<TemperatureFeature> extractTemperatureFeaturesFromRecords(List<Record> records) {
         return records.stream().map(TemperatureFeature::fromEntity).toList();
     }
 
@@ -121,21 +120,6 @@ public class PredictionService {
             }).block();
     }
 
-    private PredictionState classifyVoltagePredictionByValue(double voltagePrediction) {
-        // todo: 예측 전압값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
-    }
-
-    private PredictionState classifyPowerPredictionByValue(double powerPrediction) {
-        // todo: 예측 전력값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
-    }
-
-    private PredictionState classifyTemperaturePredictionByValue(double temperaturePrediction) {
-        // todo: 예측 온도값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
-    }
-
     private void savePredictions(VoltageAndPowerResponseDto voltageAndPowerResponseDto,
         TemperaturePredictionResponseDto temperaturePredictionResponseDto, Record record) {
         PredictionState voltagePredictionState = this.classifyVoltagePredictionByValue(
@@ -154,5 +138,20 @@ public class PredictionService {
         temperaturePredictionRepository.save(
             temperaturePredictionResponseDto.toEntity(record.getPemfc(), record.getTsec(),
                 temperaturePredictionState));
+    }
+
+    private PredictionState classifyVoltagePredictionByValue(double voltagePrediction) {
+        // todo: 예측 전압값을 보고 고장 상태를 정하는 로직이 필요함.
+        return PredictionState.NORMAL;
+    }
+
+    private PredictionState classifyPowerPredictionByValue(double powerPrediction) {
+        // todo: 예측 전력값을 보고 고장 상태를 정하는 로직이 필요함.
+        return PredictionState.NORMAL;
+    }
+
+    private PredictionState classifyTemperaturePredictionByValue(double temperaturePrediction) {
+        // todo: 예측 온도값을 보고 고장 상태를 정하는 로직이 필요함.
+        return PredictionState.NORMAL;
     }
 }

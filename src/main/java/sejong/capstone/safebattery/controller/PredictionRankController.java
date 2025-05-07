@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
 public class PredictionRankController {
+
     private final PredictionRankService rankService;
 
     @GetMapping("/voltage")
@@ -25,15 +26,18 @@ public class PredictionRankController {
             .stream().map(VoltagePredictionRankDto::fromEntity).toList();
         return list;
     }
+
     @GetMapping("/power")
     public List<PowerPredictionRankDto> getPowerPredictionRank() {
         List<PowerPredictionRankDto> list = rankService.getPowerPredictionRanks()
             .stream().map(PowerPredictionRankDto::fromEntity).toList();
         return list;
     }
+
     @GetMapping("/temperature")
     public List<TemperaturePredictionRankDto> getTemperaturePredictionRank() {
-        List<TemperaturePredictionRankDto> list = rankService.getTemperatureRanks().stream().map(TemperaturePredictionRankDto::fromEntity).toList();
+        List<TemperaturePredictionRankDto> list = rankService.getTemperatureRanks().stream()
+            .map(TemperaturePredictionRankDto::fromEntity).toList();
         return list;
     }
 }

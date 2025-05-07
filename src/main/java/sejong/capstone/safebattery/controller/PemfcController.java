@@ -25,35 +25,35 @@ import java.util.List;
 @RequestMapping("/api/pemfc")
 @RequiredArgsConstructor
 public class PemfcController {
+
     private final ClientService clientService;
     private final PemfcService pemfcService;
     private final RecordService recordService;
     private final PredictionService predictionService;
 
     @GetMapping("{pemfcId}")
-    public PemfcResponseDto getPemfcById(
-            @PathVariable("pemfcId") Long pemfcId) {
+    public PemfcResponseDto getPemfcById(@PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         return new PemfcResponseDto(pemfc);
     }
 
     @PostMapping("/")
     public ResponseEntity<String> addNewPemfc(@Valid @ModelAttribute PemfcRequestDto form,
-                                                      BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //결측치 발생 시 수행 로직 추가...
             log.info("Invalid pemfc: {}", bindingResult.getAllErrors());
         }
         Client client = clientService.searchClientById(form.getClientId()).orElseThrow();
-        pemfcService.addNewPemfc(new Pemfc(client, form.getState(), form.getLat(), form.getLng(),
-                form.getModelName(), form.getManufacturedDate()));
+        pemfcService.addNewPemfc(
+            new Pemfc(client, form.getState(), form.getLat(), form.getLng(), form.getModelName(),
+                form.getManufacturedDate()));
 
         return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
     }
 
     @DeleteMapping("/{pemfcId}/delete")
-    public ResponseEntity<String> DeletePemfcOfClient(
-            @PathVariable("pemfcId") Long pemfcId) {
+    public ResponseEntity<String> DeletePemfcOfClient(@PathVariable("pemfcId") Long pemfcId) {
 
         pemfcService.deletePemfcById(pemfcId);
 
@@ -61,28 +61,27 @@ public class PemfcController {
     }
 
     @GetMapping("/{pemfcId}/record/all")
-    public List<RecordResponseDto> getRecordsOfPemfc(
-            @PathVariable("pemfcId") Long pemfcId) {
+    public List<RecordResponseDto> getRecordsOfPemfc(@PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        return recordService.searchRecordsByPemfc(pemfc).stream()
-                .map(RecordResponseDto::new).toList();
+        return recordService.searchRecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
+            .toList();
     }
 
     @GetMapping("/{pemfcId}/record/recent600")
     public List<RecordResponseDto> getRecent600RecordsOfPemfc(
-            @PathVariable("pemfcId") Long pemfcId) {
+        @PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        return recordService.search600RecordsByPemfc(pemfc).stream()
-                .map(RecordResponseDto::new).toList();
+        return recordService.search600RecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
+            .toList();
     }
 
     @GetMapping("/{pemfcId}/csv")
-    public void getRecordCsvOfPemfc(
-            @PathVariable("pemfcId") Long pemfcId,
-            HttpServletResponse response) throws Exception {
+    public void getRecordCsvOfPemfc(@PathVariable("pemfcId") Long pemfcId,
+        HttpServletResponse response) throws Exception {
         response.setContentType("text/csv");
         response.setCharacterEncoding("UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=\"csv_of_pemfc_" + pemfcId + ".csv\"");
+        response.setHeader("Content-Disposition",
+            "attachment; filename=\"csv_of_pemfc_" + pemfcId + ".csv\"");
         recordService.makeCsvByRecordsOfPemfc(pemfcId, response.getWriter());
     }
 

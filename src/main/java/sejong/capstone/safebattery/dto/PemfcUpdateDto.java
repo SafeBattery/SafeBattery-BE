@@ -15,7 +15,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class PemfcUpdateDto {
     private Client client;
-    private PredictionState state;
+    private PredictionState powerVoltageState;
+    private PredictionState temperatureState;
     private double lat;
     private double lng;
     private String modelName;
@@ -23,10 +24,11 @@ public class PemfcUpdateDto {
 
     public PemfcUpdateDto() {}
 
-    public PemfcUpdateDto(Client client, PredictionState state, double lat, double lng,
+    public PemfcUpdateDto(Client client, PredictionState powerVoltageState, PredictionState temperatureState, double lat, double lng,
                           String modelName, LocalDate manufacturedDate) {
         this.client = client;
-        this.state = state;
+        this.powerVoltageState = powerVoltageState;
+        this.temperatureState = temperatureState;
         this.lat = lat;
         this.lng = lng;
         this.modelName = modelName;

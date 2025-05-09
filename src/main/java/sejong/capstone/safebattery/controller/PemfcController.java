@@ -20,6 +20,8 @@ import sejong.capstone.safebattery.service.RecordService;
 
 import java.util.List;
 
+import static sejong.capstone.safebattery.util.StatePolicy.*;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/pemfc")
@@ -46,8 +48,8 @@ public class PemfcController {
         }
         Client client = clientService.searchClientById(form.getClientId()).orElseThrow();
         pemfcService.addNewPemfc(
-            new Pemfc(client, form.getState(), form.getLat(), form.getLng(), form.getModelName(),
-                form.getManufacturedDate()));
+            new Pemfc(client, form.getPowerVoltageState(), form.getTemperatureState(),
+                    form.getLat(), form.getLng(), form.getModelName(), form.getManufacturedDate()));
 
         return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
     }
@@ -93,17 +95,23 @@ public class PemfcController {
         @Valid @RequestBody Record record, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            //결측치 발생 시 수행 로직 추가...
+            // 결측치 발생 시 수행 로직 추가...
             log.info("Invalid record: {}", bindingResult.getAllErrors());
         }
 
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         record.setPemfc(pemfc);
+        // 현재 record 값을 토대로 현재 state를 도출
+        record.setPowerVoltageState(getCurrentPowerVoltageState(
+            record.getPW(), record.getU_totV()));
+        record.setTemperatureState(getCurrentTemperatureState(
+            record.getT_3()));
         recordService.addNewRecord(record);
 
         if (recordService.countRecordsByPemfc(pemfc) > 600) {
             List<Record> aiServerRequestData = recordService.search600RecordsByPemfc(pemfc);
-            predictionService.createPredictions(aiServerRequestData);
+            //  todo : 여기서 해당 pemfc의 state값이 업데이트되어야 함
+            predictionService.createPredictionsAndChangeState(aiServerRequestData);
             return ResponseEntity.ok("record와 prediction이 추가되었습니다.");
         } else {
             return ResponseEntity.ok("record가 추가되었습니다.");

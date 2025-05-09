@@ -2,6 +2,7 @@ package sejong.capstone.safebattery.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import sejong.capstone.safebattery.enums.PredictionState;
 
 @Getter
 @Setter
@@ -17,6 +18,9 @@ public class Record {
     @ManyToOne(fetch = FetchType.LAZY) // 여러 row - 하나의 pemfc
     //@JoinColumn(name = "pemfc_id") //생략 가능
     private Pemfc pemfc;
+
+    private PredictionState powerVoltageState;
+    private PredictionState temperatureState;
 
     private double tsec;
     private double U_totV;
@@ -48,13 +52,16 @@ public class Record {
     public Record() {
     }
 
-    public Record(Pemfc pemfc, double tsec, double u_totV, double iA, double PW, double m_Air, double m_H2,
+    public Record(Pemfc pemfc, PredictionState powerVoltageState, PredictionState temperatureState,
+                  double tsec, double u_totV, double iA, double PW, double m_Air, double m_H2,
                   double RH_Air, double RH_H2, double p_Air_supply, double p_H2_supply, double p_Air_inlet,
                   double p_H2_inlet, double t_1, double t_2, double t_3, double t_4, double t_Air_inlet,
                   double t_H2_inlet, double t_Stack_inlet, double t_Heater, double m_Air_write,
                   double m_H2_write, int heater_power, double i_write,
                   double lat, double lng) {
         this.pemfc = pemfc;
+        this.powerVoltageState = powerVoltageState;
+        this.temperatureState = temperatureState;
         this.tsec = tsec;
         this.U_totV = u_totV;
         this.iA = iA;

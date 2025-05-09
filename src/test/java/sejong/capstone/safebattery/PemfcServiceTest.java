@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.dto.PemfcUpdateDto;
-import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.service.PemfcService;
 
@@ -31,9 +30,9 @@ public class PemfcServiceTest {
     public void 모든Pemfc찾기() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc3 = new Pemfc(client, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client);
@@ -50,9 +49,9 @@ public class PemfcServiceTest {
         //given
         Client client1 = new Client("Gildong Hong");
         Client client2 = new Client("Baksa Hong");
-        Pemfc pemfc1 = new Pemfc(client1, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client1, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc3 = new Pemfc(client2, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client1, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client1, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client2, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client1);
@@ -71,23 +70,26 @@ public class PemfcServiceTest {
         //given
         Client client1 = new Client("Gildong Hong");
         Client client2 = new Client("Baksa Hong");
-        Pemfc pemfc = new Pemfc(client1, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client1, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         pemfcService.addNewPemfc(pemfc);
-        PemfcUpdateDto updateParams = new PemfcUpdateDto(client2, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        PemfcUpdateDto updateParams = new PemfcUpdateDto(client2, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
-        pemfcService.updatePemfcById(pemfc.getId(), updateParams);
+        pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+        pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), ERROR);
 
         //then
-        assertThat(pemfcService.searchPemfcById(pemfc.getId()).orElseThrow().getClient().getName())
-                .isEqualTo("Baksa Hong");
+        assertThat(pemfcService.searchPemfcById(pemfc.getId()).orElseThrow()
+                .getPowerVoltageState()).isEqualTo(WARNING);
+        assertThat(pemfcService.searchPemfcById(pemfc.getId()).orElseThrow()
+                .getTemperatureState()).isEqualTo(ERROR);
     }
 
     @Test
     public void 클라이언트삭제() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         pemfcService.addNewPemfc(pemfc);
 
         //when

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
 import sejong.capstone.safebattery.service.RecordService;
+import sejong.capstone.safebattery.util.StatePolicy;
 
 import java.util.List;
 

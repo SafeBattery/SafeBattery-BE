@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.dto.PemfcUpdateDto;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 
 import java.util.List;
@@ -33,9 +34,14 @@ public class PemfcService {
         return pemfcRepository.findAllByClient(client);
     }
 
-    public void updatePemfcById(Long id, PemfcUpdateDto updateParams) {
+    public void updatePemfcPowerVoltageStateById(Long id, PredictionState state) {
         Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
-        pemfc.setClient(updateParams.getClient());
+        pemfc.setPowerVoltageState(state);
+    }
+
+    public void updatePemfcTemperatureStateById(Long id, PredictionState state) {
+        Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
+        pemfc.setTemperatureState(state);
     }
 
     public void deletePemfcById(Long id) {

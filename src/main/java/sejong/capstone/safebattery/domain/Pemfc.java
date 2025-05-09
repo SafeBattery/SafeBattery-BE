@@ -23,7 +23,8 @@ public class Pemfc {
     //@JoinColumn(name = "client_id") //생략 가능
     private Client client;
 
-    private PredictionState state;
+    private PredictionState powerVoltageState;
+    private PredictionState temperatureState;
     private double lat;
     private double lng;
     private String modelName;
@@ -31,10 +32,12 @@ public class Pemfc {
 
     public Pemfc() {}
 
-    public Pemfc(Client client, PredictionState state, double lat, double lng,
+    public Pemfc(Client client, PredictionState powerVoltageState,
+                 PredictionState temperatureState, double lat, double lng,
                  String modelName, LocalDate manufacturedDate) {
         this.client = client;
-        this.state = state;
+        this.powerVoltageState = powerVoltageState;
+        this.temperatureState = temperatureState;
         this.lat = lat;
         this.lng = lng;
         this.modelName = modelName;

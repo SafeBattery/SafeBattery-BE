@@ -3,12 +3,16 @@ package sejong.capstone.safebattery.dto;
 import com.opencsv.bean.CsvBindByName;
 import lombok.Getter;
 import lombok.Setter;
-import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.enums.PredictionState;
 
 @Getter
 @Setter
 public class RecordCsvExportDto {
+    @CsvBindByName(column = "power_and_voltage_state")
+    private PredictionState powerVoltageState;
+    @CsvBindByName(column = "temperature_state")
+    private PredictionState temperatureState;
     @CsvBindByName(column = "tsec")
     private double tsec;
     @CsvBindByName(column = "U_totV")
@@ -63,6 +67,8 @@ public class RecordCsvExportDto {
     private double lng;
 
     public RecordCsvExportDto(Record r) {
+        this.powerVoltageState = r.getPowerVoltageState();
+        this.temperatureState = r.getTemperatureState();
         this.tsec = r.getTsec();
         this.U_totV = r.getU_totV();
         this.iA = r.getIA();

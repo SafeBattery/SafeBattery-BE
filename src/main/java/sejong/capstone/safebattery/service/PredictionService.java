@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import sejong.capstone.safebattery.Constants;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.domain.Record;
@@ -22,8 +21,9 @@ import sejong.capstone.safebattery.repository.PowerPredictionRepository;
 import sejong.capstone.safebattery.repository.TemperaturePredictionRepository;
 import sejong.capstone.safebattery.repository.VoltagePredictionRepository;
 
+import static sejong.capstone.safebattery.Constants.*;
 import static sejong.capstone.safebattery.enums.PredictionState.*;
-
+import static sejong.capstone.safebattery.util.StatePolicy.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,12 +35,13 @@ public class PredictionService {
     private final WebClient AIServerWebClient;
     private final String VoltageAndPowerPredictionUrl = "/predict_and_explain/UtotV_and_PW";
     private final String TemperaturePredictionUrl = "/predict_and_explain/T3";
+    private final PemfcService pemfcService;
 
     /**
      * 600개의 record를 ai서버로 전송하여 prediction을 획득. 획득한 prediction은 데이터베이스에 저장한다.
      */
 
-    public void createPredictions(List<Record> records) {
+    public void createPredictionsAndChangeState(List<Record> records) {
         // 1. 정보 추출
         List<VoltageAndPowerFeature> voltageAndPowerFeatures
                 = this.extractVoltageAndPowerFeaturesFromRecords(records);
@@ -49,22 +50,26 @@ public class PredictionService {
 
         // 2. 요청
         // todo:
-        //  1. threshold값을 어떤 기준으로 정할지 논의가 필요함.
         //  2. 요청이 실패하는 경우에 대한 예외처리 필요함.
         VoltageAndPowerRequestDto requestDto1 = new VoltageAndPowerRequestDto(
-            voltageAndPowerFeatures, new double[]{0.0, 1.0});
-        VoltageAndPowerResponseDto voltageAndPowerResponseDto = this.requestVoltageAndPowerPredictionToAIServer(
-            requestDto1);
+            voltageAndPowerFeatures, new double[]{
+                VOLTAGE_LOWER_BOUND, VOLTAGE_UPPER_BOUND,
+                POWER_LOWER_BOUND, POWER_UPPER_BOUND
+            });
+        VoltageAndPowerResponseDto voltageAndPowerResponseDto =
+                this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
 
         TemperaturePredictionRequestDto requestDto2 = new TemperaturePredictionRequestDto(
-            temperatureFeatures, new double[]{0.0});
-        TemperaturePredictionResponseDto temperaturePredictionResponseDto = this.requestTemperaturePredictionToAIServer(
-            requestDto2);
+            temperatureFeatures, new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
+        TemperaturePredictionResponseDto temperaturePredictionResponseDto =
+                this.requestTemperaturePredictionToAIServer(requestDto2);
 
         // 3. 결과 저장
         // todo: 예측값을 보고 PredictionState를 정하는 로직이 필요함.
         Record record = records.get(0);
-        this.savePredictions(voltageAndPowerResponseDto, temperaturePredictionResponseDto, record);
+        // 여기서 Pemfc의 State 수정이 이루어짐
+        this.savePredictionsAndChangeState(
+                voltageAndPowerResponseDto, temperaturePredictionResponseDto, record);
     }
 
     private List<VoltageAndPowerFeature> extractVoltageAndPowerFeaturesFromRecords(
@@ -122,14 +127,16 @@ public class PredictionService {
             }).block();
     }
 
-    private void savePredictions(VoltageAndPowerResponseDto voltageAndPowerResponseDto,
-        TemperaturePredictionResponseDto temperaturePredictionResponseDto, Record record) {
-        PredictionState voltagePredictionState = this.classifyVoltagePredictionByValue(
+    private void savePredictionsAndChangeState(
+            VoltageAndPowerResponseDto voltageAndPowerResponseDto,
+            TemperaturePredictionResponseDto temperaturePredictionResponseDto,
+            Record record) {
+        PredictionState voltagePredictionState = this.classifyVoltagePredictionByValueAndChangeState(
             voltageAndPowerResponseDto.getVoltagePrediction(), record);
-        PredictionState powerPredictionState = this.classifyPowerPredictionByValue(
-            voltageAndPowerResponseDto.getPowerPrediction());
-        PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValue(
-            temperaturePredictionResponseDto.getTemperaturePrediction());
+        PredictionState powerPredictionState = this.classifyPowerPredictionByValueAndChangeState(
+            voltageAndPowerResponseDto.getPowerPrediction(), record);
+        PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValueAndChangeState(
+            temperaturePredictionResponseDto.getTemperaturePrediction(), record);
 
         voltagePredictionRepository.save(
             voltageAndPowerResponseDto.toVoltagePrediction(record.getPemfc(), record.getTsec(),
@@ -142,35 +149,166 @@ public class PredictionService {
                 temperaturePredictionState));
     }
 
-    private PredictionState classifyVoltagePredictionByValue(double voltagePrediction, Record record) {
-        // todo: 예측 전압값을 보고 고장 상태를 정하는 로직이 필요함.
-        if (isNormalVoltage(voltagePrediction)) {
-            return NORMAL;
-        }
-        else {
-            Pemfc pemfc = record.getPemfc();
-            if (pemfc.getState() == NORMAL) {
-                //  todo: pemfc의 상태를 바꿔 주는 로직 필요
-                return WARNING;
+    private PredictionState classifyVoltagePredictionByValueAndChangeState(
+            double voltagePrediction, Record record) {
+        Pemfc pemfc = record.getPemfc();
+        if(record.getPowerVoltageState() == NORMAL) {
+            if (isNormalVoltage(voltagePrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    //do nothing
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // do nothing
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                return ERROR;
             }
-            else{
-                //  todo: pemfc의 상태를 바꿔 주는 로직 필요
-                return ERROR;}
+        } else { // record == ERROR
+            if (isNormalVoltage(voltagePrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return ERROR;
+            }
         }
     }
 
-    private PredictionState classifyPowerPredictionByValue(double powerPrediction) {
-        // todo: 예측 전력값을 보고 고장 상태를 정하는 로직이 필요함.
-        return NORMAL;
+    private PredictionState classifyPowerPredictionByValueAndChangeState(double powerPrediction, Record record) {
+        Pemfc pemfc = record.getPemfc();
+        if(record.getPowerVoltageState() == NORMAL) {
+            if (isNormalPower(powerPrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    //do nothing
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // do nothing
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                return ERROR;
+            }
+        } else { // record == ERROR
+            if (isNormalPower(powerPrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return ERROR;
+            }
+        }
     }
 
-    private PredictionState classifyTemperaturePredictionByValue(double temperaturePrediction) {
-        // todo: 예측 온도값을 보고 고장 상태를 정하는 로직이 필요함.
-        return NORMAL;
-    }
-
-    private boolean isNormalVoltage(double voltagePrediction) {
-        return voltagePrediction > Constants.PREDICTION_VOLTAGE_LOWER_BOUND
-                && voltagePrediction < Constants.PREDICTION_VOLTAGE_UPPER_BOUND;
+    private PredictionState classifyTemperaturePredictionByValueAndChangeState(double temperaturePrediction, Record record) {
+        Pemfc pemfc = record.getPemfc();
+        if(record.getPowerVoltageState() == NORMAL) {
+            if (isNormalTemperature(temperaturePrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    //do nothing
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    // do nothing
+                }
+                else { // pemfc == ERROR
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                }
+                return ERROR;
+            }
+        } else { // record == ERROR
+            if (isNormalTemperature(temperaturePrediction)) {
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return NORMAL;
+            } else { // prediction == ERROR
+                if (pemfc.getPowerVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else if (pemfc.getPowerVoltageState() == WARNING) {
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                }
+                else { // pemfc == ERROR
+                    //do nothing
+                }
+                return ERROR;
+            }
+        }
     }
 }

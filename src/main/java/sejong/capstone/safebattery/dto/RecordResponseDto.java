@@ -3,11 +3,14 @@ package sejong.capstone.safebattery.dto;
 import lombok.Getter;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.enums.PredictionState;
 
 @Getter
 public class RecordResponseDto {
     private Long id; // PK
 
+    private PredictionState powerVoltageState;
+    private PredictionState temperatureState;
     private double tsec;
     private double U_totV;
     private double iA;
@@ -40,6 +43,8 @@ public class RecordResponseDto {
 
     public RecordResponseDto(Record record) {
         this.id = record.getId();
+        this.powerVoltageState = record.getPowerVoltageState();
+        this.temperatureState = record.getTemperatureState();
         this.tsec = record.getTsec();
         this.U_totV = record.getU_totV();
         this.iA = record.getIA();

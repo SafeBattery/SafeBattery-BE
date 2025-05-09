@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import sejong.capstone.safebattery.domain.Client;
-import sejong.capstone.safebattery.enums.State;
+import sejong.capstone.safebattery.enums.PredictionState;
 
 import java.time.LocalDate;
 
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class PemfcUpdateDto {
     private Client client;
-    private State state;
+    private PredictionState state;
     private double lat;
     private double lng;
     private String modelName;
@@ -23,7 +23,7 @@ public class PemfcUpdateDto {
 
     public PemfcUpdateDto() {}
 
-    public PemfcUpdateDto(Client client, State state, double lat, double lng,
+    public PemfcUpdateDto(Client client, PredictionState state, double lat, double lng,
                           String modelName, LocalDate manufacturedDate) {
         this.client = client;
         this.state = state;

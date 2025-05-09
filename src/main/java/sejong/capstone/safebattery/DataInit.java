@@ -7,13 +7,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.enums.State;
 import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.RecordService;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
+import static sejong.capstone.safebattery.enums.PredictionState.NORMAL;
 
 @Slf4j
 @Component
@@ -45,9 +45,9 @@ public class DataInit {
             predictionRepository.deleteAll();
 
             Client client = new Client("Gildong Hong");
-            Pemfc pemfc = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-            Pemfc pemfc1 = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
-            Pemfc pemfc2 = new Pemfc(client, State.NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
+            Pemfc pemfc = new Pemfc(client, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+            Pemfc pemfc1 = new Pemfc(client, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc2 = new Pemfc(client, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
             pemfcRepository.save(pemfc);
             pemfcRepository.save(pemfc1);

@@ -9,10 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.util.PredictionStateConverter;
 
 @Getter

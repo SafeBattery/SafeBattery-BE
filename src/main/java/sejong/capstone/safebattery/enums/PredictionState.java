@@ -1,4 +1,4 @@
-package sejong.capstone.safebattery.domain;
+package sejong.capstone.safebattery.enums;
 
 import lombok.Getter;
 

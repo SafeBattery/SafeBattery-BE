@@ -22,7 +22,7 @@ public class RecordController {
     public RecordResponseDto createNewRecord(@Valid @ModelAttribute Record record,
                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            //결측치 발생 시 수행 로직 추가...
+            //  todo : 결측치 발생 시 수행 로직 추가
         }
 
         return new RecordResponseDto(service.addNewRecord(record));

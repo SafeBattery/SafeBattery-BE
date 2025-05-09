@@ -55,7 +55,7 @@ public class RecordService {
         Pemfc pemfc = pemfcRepository.findById(pemfcId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
 
-        // ✅ classpath 기준 리소스 접근
+        // classpath 기준 리소스 접근
         InputStream inputStream = new ClassPathResource("full_test_data.csv").getInputStream();
         Reader reader = new InputStreamReader(inputStream);
 

@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import sejong.capstone.safebattery.dao.RawPredictionRank;
 import sejong.capstone.safebattery.domain.BasePrediction;
 import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.domain.PredictionState;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.dao.PredictionRank;
 import sejong.capstone.safebattery.util.TableNameResolver;
 

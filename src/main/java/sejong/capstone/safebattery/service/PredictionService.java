@@ -5,11 +5,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import sejong.capstone.safebattery.domain.PredictionState;
+import sejong.capstone.safebattery.Constants;
+import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.TemperatureFeature;
 import sejong.capstone.safebattery.dto.TemperaturePredictionRequestDto;
@@ -20,6 +21,8 @@ import sejong.capstone.safebattery.dto.VoltageAndPowerResponseDto;
 import sejong.capstone.safebattery.repository.PowerPredictionRepository;
 import sejong.capstone.safebattery.repository.TemperaturePredictionRepository;
 import sejong.capstone.safebattery.repository.VoltagePredictionRepository;
+
+import static sejong.capstone.safebattery.enums.PredictionState.*;
 
 @Slf4j
 @Service
@@ -39,11 +42,10 @@ public class PredictionService {
 
     public void createPredictions(List<Record> records) {
         // 1. 정보 추출
-        List<VoltageAndPowerFeature> voltageAndPowerFeatures = this.extractVoltageAndPowerFeaturesFromRecords(
-            records);
-        // todo: 온도 예측에 필요한 정보만 추출하여 dto로 만들기
-        List<TemperatureFeature> temperatureFeatures = this.extractTemperatureFeaturesFromRecords(
-            records);
+        List<VoltageAndPowerFeature> voltageAndPowerFeatures
+                = this.extractVoltageAndPowerFeaturesFromRecords(records);
+        List<TemperatureFeature> temperatureFeatures
+                = this.extractTemperatureFeaturesFromRecords(records);
 
         // 2. 요청
         // todo:
@@ -123,7 +125,7 @@ public class PredictionService {
     private void savePredictions(VoltageAndPowerResponseDto voltageAndPowerResponseDto,
         TemperaturePredictionResponseDto temperaturePredictionResponseDto, Record record) {
         PredictionState voltagePredictionState = this.classifyVoltagePredictionByValue(
-            voltageAndPowerResponseDto.getVoltagePrediction());
+            voltageAndPowerResponseDto.getVoltagePrediction(), record);
         PredictionState powerPredictionState = this.classifyPowerPredictionByValue(
             voltageAndPowerResponseDto.getPowerPrediction());
         PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValue(
@@ -140,18 +142,35 @@ public class PredictionService {
                 temperaturePredictionState));
     }
 
-    private PredictionState classifyVoltagePredictionByValue(double voltagePrediction) {
+    private PredictionState classifyVoltagePredictionByValue(double voltagePrediction, Record record) {
         // todo: 예측 전압값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
+        if (isNormalVoltage(voltagePrediction)) {
+            return NORMAL;
+        }
+        else {
+            Pemfc pemfc = record.getPemfc();
+            if (pemfc.getState() == NORMAL) {
+                //  todo: pemfc의 상태를 바꿔 주는 로직 필요
+                return WARNING;
+            }
+            else{
+                //  todo: pemfc의 상태를 바꿔 주는 로직 필요
+                return ERROR;}
+        }
     }
 
     private PredictionState classifyPowerPredictionByValue(double powerPrediction) {
         // todo: 예측 전력값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
+        return NORMAL;
     }
 
     private PredictionState classifyTemperaturePredictionByValue(double temperaturePrediction) {
         // todo: 예측 온도값을 보고 고장 상태를 정하는 로직이 필요함.
-        return PredictionState.NORMAL;
+        return NORMAL;
+    }
+
+    private boolean isNormalVoltage(double voltagePrediction) {
+        return voltagePrediction > Constants.PREDICTION_VOLTAGE_LOWER_BOUND
+                && voltagePrediction < Constants.PREDICTION_VOLTAGE_UPPER_BOUND;
     }
 }

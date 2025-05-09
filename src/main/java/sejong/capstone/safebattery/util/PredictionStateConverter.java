@@ -3,7 +3,7 @@ package sejong.capstone.safebattery.util;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.stream.Stream;
-import sejong.capstone.safebattery.domain.PredictionState;
+import sejong.capstone.safebattery.enums.PredictionState;
 
 @Converter
 public class PredictionStateConverter implements AttributeConverter<PredictionState, String> {

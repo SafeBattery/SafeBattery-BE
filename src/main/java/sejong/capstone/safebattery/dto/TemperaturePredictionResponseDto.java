@@ -2,7 +2,7 @@ package sejong.capstone.safebattery.dto;
 
 import java.util.List;
 import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.domain.PredictionState;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.domain.TemperaturePrediction;
 
 public record TemperaturePredictionResponseDto(List<List<Double>> masks, List<Double> prediction) {

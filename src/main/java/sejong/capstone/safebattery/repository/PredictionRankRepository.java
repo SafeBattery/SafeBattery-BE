@@ -20,38 +20,50 @@ public class PredictionRankRepository<T extends BasePrediction> {
     private final JdbcTemplate jdbcTemplate;
     private final PemfcRepository pemfcRepository;
     private final Class<T> domainClassType;
+    private final long recordSize = 50;
     private final String sql = """
-            SELECT
-              t.pemfc_id   AS pemfcId,
-              t.state      AS state,
-              COUNT(t.id)  AS cnt
-            FROM (
-              SELECT *
-                FROM %s
-               WHERE state = ?
-               ORDER BY tsec DESC
-               LIMIT ?
-            ) t
-            GROUP BY t.pemfc_id, t.state
-            ORDER BY cnt DESC
+        WITH limited_preds AS (
+                     SELECT
+                         p.*,
+                     ROW_NUMBER() OVER (
+                 PARTITION BY p.pemfc_id
+                 ORDER BY p.tsec DESC
+                     ) AS rn
+                 FROM
+                 %s p
+            )
+        SELECT
+            l.pemfc_id  AS pemfcId,
+            COUNT(*)    AS totalCount,
+            SUM(CASE WHEN state = 'ERROR' THEN 1 ELSE 0 END) AS errorCount,
+            AVG(CASE WHEN state = 'ERROR' THEN 1.0 ELSE 0 END)   AS errorRate
+        FROM
+            limited_preds l
+        WHERE
+            rn <= ?
+        GROUP BY
+            pemfc_id
+        ORDER BY
+            errorRate DESC;
         """;
 
     public List<PredictionRank> getPredictionRanks() {
         // todo: recordSize에 대해서 논의 필요
         //  PredictionState.ERROR로 변경하기
-        List<RawPredictionRank> rawPredictionRanks = this.getRawPredictionRanks(
-            PredictionState.NORMAL, 10);
+        List<RawPredictionRank> rawPredictionRanks = this.getRawPredictionRanks();
         return this.mapFromRawPredictionRankToPredictionRank(rawPredictionRanks);
     }
 
-    protected List<RawPredictionRank> getRawPredictionRanks(PredictionState state,
-        long recordSize) {
+    protected List<RawPredictionRank> getRawPredictionRanks() {
         String formattedSql = this.generateSql();
 
         List<RawPredictionRank> raws = jdbcTemplate.query(formattedSql,
-            new Object[]{state.name(), recordSize},
-            (rs, rowNum) -> new RawPredictionRank(rs.getLong("pemfcId"), rs.getString("state"),
-                rs.getLong("cnt")));
+            new Object[]{recordSize},
+            (rs, rowNum) -> new RawPredictionRank(
+                rs.getLong("pemfcId"),
+                rs.getLong("totalCount"),
+                rs.getLong("errorCount"),
+                rs.getDouble("errorRate")));
         if (raws.isEmpty()) {
             return Collections.emptyList();
         }
@@ -74,7 +86,7 @@ public class PredictionRankRepository<T extends BasePrediction> {
         Map<Long, Pemfc> pemfcMap = pemfcs.stream()
             .collect(Collectors.toMap(Pemfc::getId, Function.identity()));
 
-        return rawPredictionRanks.stream().map(r -> new PredictionRank(pemfcMap.get(r.pemfcId()),
-            PredictionState.valueOf(r.predictionState()), r.count())).toList();
+        return rawPredictionRanks.stream().map(r -> PredictionRank.fromRawPredictionRank(
+            r, pemfcMap.get(r.pemfcId()))).toList();
     }
 }

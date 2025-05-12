@@ -12,7 +12,6 @@ public class ServerExceptionHandler {
 
     @ExceptionHandler(AiServerException.class)
     public ResponseEntity<String> handleAIServerException(AiServerException e) {
-        log.error(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body("AI 서버와 통신 중 에러 발생 : " + e.getMessage());
     }

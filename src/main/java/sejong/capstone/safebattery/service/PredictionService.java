@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.enums.PredictionState;
+import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.dto.TemperatureFeature;
 import sejong.capstone.safebattery.dto.TemperaturePredictionRequestDto;
 import sejong.capstone.safebattery.dto.TemperaturePredictionResponseDto;
@@ -107,6 +107,7 @@ public class PredictionService {
                         }
                     }).block();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new AiServerException("AI 서버에 전압/전력 예측값 요청 중 예외 발생", e);
         }
     }
@@ -132,6 +133,7 @@ public class PredictionService {
                         }
                     }).block();
         }catch (Exception e) {
+            e.printStackTrace();
             throw new AiServerException("AI 서버에 온도 예측값 요청 중 예외 발생", e);
         }
     }
@@ -167,8 +169,13 @@ public class PredictionService {
                     //do nothing
                 }
                 else if (pemfc.getPowerVoltageState() == WARNING) {
-                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                    // todo : NNW Problem.
+                    List<VoltagePrediction> predictions =
+                            voltagePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+                    PredictionState result = predictions.stream()
+                            .anyMatch(pred -> pred.getState() != NORMAL) ?
+                            WARNING : NORMAL;
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), result);
                 }
                 else { // pemfc == ERROR
                     pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
@@ -221,8 +228,13 @@ public class PredictionService {
                     //do nothing
                 }
                 else if (pemfc.getPowerVoltageState() == WARNING) {
-                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                    // todo : NNW Problem.
+                    List<PowerPrediction> predictions =
+                            powerPredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+                    PredictionState result = predictions.stream()
+                            .anyMatch(pred -> pred.getState() != NORMAL) ?
+                            WARNING : NORMAL;
+                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), result);
                 }
                 else { // pemfc == ERROR
                     pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
@@ -269,49 +281,54 @@ public class PredictionService {
 
     private PredictionState classifyTemperaturePredictionByValueAndChangeState(double temperaturePrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
-        if(record.getPowerVoltageState() == NORMAL) {
+        if(record.getTemperatureState() == NORMAL) {
             if (isNormalTemperature(temperaturePrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
+                if (pemfc.getTemperatureState() == NORMAL) {
                     //do nothing
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    // todo : NNW Problem. 일단 NORMAL 변경으로 구현
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                else if (pemfc.getTemperatureState() == WARNING) {
+                    // todo : NNW Problem.
+                    List<TemperaturePrediction> predictions =
+                            temperaturePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+                    PredictionState result = predictions.stream()
+                            .anyMatch(pred -> pred.getState() != NORMAL) ?
+                            WARNING : NORMAL;
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), result);
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), NORMAL);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                if (pemfc.getTemperatureState() == NORMAL) {
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), WARNING);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
+                else if (pemfc.getTemperatureState() == WARNING) {
                     // do nothing
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), WARNING);
                 }
                 return ERROR;
             }
         } else { // record == ERROR
             if (isNormalTemperature(temperaturePrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getTemperatureState() == NORMAL) {
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getTemperatureState() == WARNING) {
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getTemperatureState() == NORMAL) {
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getTemperatureState() == WARNING) {
+                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing

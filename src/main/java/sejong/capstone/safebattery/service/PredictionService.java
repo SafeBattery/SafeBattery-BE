@@ -17,6 +17,7 @@ import sejong.capstone.safebattery.dto.TemperaturePredictionResponseDto;
 import sejong.capstone.safebattery.dto.VoltageAndPowerFeature;
 import sejong.capstone.safebattery.dto.VoltageAndPowerRequestDto;
 import sejong.capstone.safebattery.dto.VoltageAndPowerResponseDto;
+import sejong.capstone.safebattery.exception.AiServerException;
 import sejong.capstone.safebattery.repository.PowerPredictionRepository;
 import sejong.capstone.safebattery.repository.TemperaturePredictionRepository;
 import sejong.capstone.safebattery.repository.VoltagePredictionRepository;
@@ -90,20 +91,24 @@ public class PredictionService {
      */
     private VoltageAndPowerResponseDto requestVoltageAndPowerPredictionToAIServer(
         VoltageAndPowerRequestDto requestDto) {
-        return AIServerWebClient.post().uri(VoltageAndPowerPredictionUrl).bodyValue(requestDto)
-            .exchangeToMono(response -> {
-                if (response.statusCode().is2xxSuccessful()) {
-                    // 성공 응답 처리
-                    return response.bodyToMono(VoltageAndPowerResponseDto.class);
-                } else {
-                    // 에러 응답의 본문을 String으로 읽어서 로그로 남기고 예외 던지기
-                    return response.bodyToMono(String.class).flatMap(body -> {
-                        log.error("AI 서버 에러 (status: {}): {}", response.statusCode(), body);
-                        return Mono.error(
-                            new RuntimeException("AI 서버 요청 실패: status=" + response.statusCode()));
-                    });
-                }
-            }).block();
+        try {
+            return AIServerWebClient.post().uri(VoltageAndPowerPredictionUrl).bodyValue(requestDto)
+                    .exchangeToMono(response -> {
+                        if (response.statusCode().is2xxSuccessful()) {
+                            // 성공 응답 처리
+                            return response.bodyToMono(VoltageAndPowerResponseDto.class);
+                        } else {
+                            // 에러 응답의 본문을 String으로 읽어서 로그로 남기고 예외 던지기
+                            return response.bodyToMono(String.class).flatMap(body -> {
+                                log.error("AI 서버 에러 (status: {}): {}", response.statusCode(), body);
+                                return Mono.error(
+                                        new RuntimeException("AI 서버 요청 실패: status=" + response.statusCode()));
+                            });
+                        }
+                    }).block();
+        } catch (Exception e) {
+            throw new AiServerException("AI 서버에 전압/전력 예측값 요청 중 예외 발생", e);
+        }
     }
 
     /**
@@ -111,20 +116,24 @@ public class PredictionService {
      */
     private TemperaturePredictionResponseDto requestTemperaturePredictionToAIServer(
         TemperaturePredictionRequestDto requestDto) {
-        return AIServerWebClient.post().uri(TemperaturePredictionUrl).bodyValue(requestDto)
-            .exchangeToMono(response -> {
-                if (response.statusCode().is2xxSuccessful()) {
-                    // 성공 응답 처리
-                    return response.bodyToMono(TemperaturePredictionResponseDto.class);
-                } else {
-                    // 에러 응답의 본문을 String으로 읽어서 로그로 남기고 예외 던지기
-                    return response.bodyToMono(String.class).flatMap(body -> {
-                        log.error("AI 서버 에러 (status: {}): {}", response.statusCode(), body);
-                        return Mono.error(
-                            new RuntimeException("AI 서버 요청 실패: status=" + response.statusCode()));
-                    });
-                }
-            }).block();
+        try {
+            return AIServerWebClient.post().uri(TemperaturePredictionUrl).bodyValue(requestDto)
+                    .exchangeToMono(response -> {
+                        if (response.statusCode().is2xxSuccessful()) {
+                            // 성공 응답 처리
+                            return response.bodyToMono(TemperaturePredictionResponseDto.class);
+                        } else {
+                            // 에러 응답의 본문을 String으로 읽어서 로그로 남기고 예외 던지기
+                            return response.bodyToMono(String.class).flatMap(body -> {
+                                log.error("AI 서버 에러 (status: {}): {}", response.statusCode(), body);
+                                return Mono.error(
+                                        new RuntimeException("AI 서버 요청 실패: status=" + response.statusCode()));
+                            });
+                        }
+                    }).block();
+        }catch (Exception e) {
+            throw new AiServerException("AI 서버에 온도 예측값 요청 중 예외 발생", e);
+        }
     }
 
     private void savePredictionsAndChangeState(

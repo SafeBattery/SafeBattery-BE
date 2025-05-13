@@ -34,9 +34,14 @@ public class PemfcService {
         return pemfcRepository.findAllByClient(client);
     }
 
-    public void updatePemfcPowerVoltageStateById(Long id, PredictionState state) {
+    public void updatePemfcPowerStateById(Long id, PredictionState state) {
         Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
-        pemfc.setPowerVoltageState(state);
+        pemfc.setPowerState(state);
+    }
+
+    public void updatePemfcVoltageStateById(Long id, PredictionState state) {
+        Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
+        pemfc.setVoltageState(state);
     }
 
     public void updatePemfcTemperatureStateById(Long id, PredictionState state) {

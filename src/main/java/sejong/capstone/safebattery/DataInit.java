@@ -45,9 +45,9 @@ public class DataInit {
             predictionRepository.deleteAll();
 
             Client client = new Client("Gildong Hong");
-            Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
-            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
+            Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
             pemfcRepository.save(pemfc);
             pemfcRepository.save(pemfc1);

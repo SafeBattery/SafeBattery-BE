@@ -10,7 +10,8 @@ import java.time.LocalDate;
 public class PemfcResponseDto {
     private Long id;
     private Long clientId;
-    private PredictionState powerVoltageState;
+    private PredictionState powerState;
+    private PredictionState voltageState;
     private PredictionState temperatureState;
     private double lat;
     private double lng;
@@ -22,7 +23,8 @@ public class PemfcResponseDto {
     public PemfcResponseDto(Pemfc pemfc) {
         this.id = pemfc.getId();
         this.clientId = pemfc.getClient().getId();
-        this.powerVoltageState = pemfc.getPowerVoltageState();
+        this.powerState = pemfc.getPowerState();
+        this.voltageState = pemfc.getVoltageState();
         this.temperatureState = pemfc.getTemperatureState();
         this.lat = pemfc.getLat();
         this.lng = pemfc.getLng();

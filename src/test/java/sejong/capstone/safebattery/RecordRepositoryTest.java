@@ -37,8 +37,8 @@ public class RecordRepositoryTest {
     public void create() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Record record = new Record(pemfc, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107,
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Record record = new Record(pemfc, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107,
                 7.749, 1.052, 94.016, 100.098,
         0.96, 0.556, 1.059, 0.677,
                 14.691, -64762.981, 34.011, 14.584,
@@ -58,8 +58,8 @@ public class RecordRepositoryTest {
     public void read() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Record record = new Record(pemfc, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107,
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Record record = new Record(pemfc, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107,
                 7.749, 1.052, 94.016, 100.098,
                 0.96, 0.556, 1.059, 0.677,
                 14.691, -64762.981, 34.011, 14.584,
@@ -80,13 +80,13 @@ public class RecordRepositoryTest {
     public void readAllByPemfc() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
-        Record record1 = new Record(pemfc1, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
-        Record record2 = new Record(pemfc1, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
-        Record record3 = new Record(pemfc2, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
+        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
+        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
 
         //when
         clientRepository.save(client);
@@ -105,14 +105,14 @@ public class RecordRepositoryTest {
     public void read600RowsByPemfc() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         pemfcRepository.save(pemfc);
 
         //when
         clientRepository.save(client);
         pemfcRepository.save(pemfc);
         for(int i = 0; i < 700; i++) {
-            Record newRecord = new Record(pemfc, NORMAL, NORMAL, (double) i, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+            Record newRecord = new Record(pemfc, NORMAL, NORMAL, NORMAL, (double) i, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
             recordRepository.save(newRecord);
         }
 
@@ -125,13 +125,13 @@ public class RecordRepositoryTest {
     public void countAllByPemfc() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
-        Record record1 = new Record(pemfc1, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
-        Record record2 = new Record(pemfc1, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
-        Record record3 = new Record(pemfc2, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
+        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
+        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
 
         //when
         clientRepository.save(client);

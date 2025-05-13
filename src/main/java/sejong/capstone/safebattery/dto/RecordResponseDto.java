@@ -9,7 +9,8 @@ import sejong.capstone.safebattery.enums.PredictionState;
 public class RecordResponseDto {
     private Long id; // PK
 
-    private PredictionState powerVoltageState;
+    private PredictionState powerState;
+    private PredictionState voltageState;
     private PredictionState temperatureState;
     private double tsec;
     private double U_totV;
@@ -43,7 +44,8 @@ public class RecordResponseDto {
 
     public RecordResponseDto(Record record) {
         this.id = record.getId();
-        this.powerVoltageState = record.getPowerVoltageState();
+        this.powerState = record.getPowerState();
+        this.voltageState = record.getVoltageState();
         this.temperatureState = record.getTemperatureState();
         this.tsec = record.getTsec();
         this.U_totV = record.getU_totV();

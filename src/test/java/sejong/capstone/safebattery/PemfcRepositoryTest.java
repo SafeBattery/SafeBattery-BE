@@ -30,7 +30,7 @@ public class PemfcRepositoryTest {
     public void create() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client);
@@ -44,7 +44,7 @@ public class PemfcRepositoryTest {
     public void read() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc = pemfcRepository.save(pemfc);
 
         //when
@@ -60,9 +60,9 @@ public class PemfcRepositoryTest {
     public void readAll() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client);
@@ -79,9 +79,9 @@ public class PemfcRepositoryTest {
         //given
         Client client1 = new Client("Gildong Hong");
         Client client2 = new Client("Baksa Hong");
-        Pemfc pemfc1 = new Pemfc(client1, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client1, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc3 = new Pemfc(client2, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client1, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client1, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc3 = new Pemfc(client2, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
 
         //when
         clientRepository.save(client1);
@@ -99,7 +99,7 @@ public class PemfcRepositoryTest {
     public void delete() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         pemfcRepository.save(pemfc);
 
         //when

@@ -34,7 +34,7 @@ public class PredictionRepositoryTest {
     public void create() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
 
         //when
@@ -50,7 +50,7 @@ public class PredictionRepositoryTest {
     public void read() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Prediction prediction = new Prediction(pemfc, 1.047, 1.0);
         Prediction savedPrediction = predictionRepository.save(prediction);
 
@@ -67,8 +67,8 @@ public class PredictionRepositoryTest {
     public void readAllByPemfc() {
         //given
         Client client = new Client("Gildong Hong");
-        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+        Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
         Prediction prediction1 = new Prediction(pemfc1, 1.047, 1.0);

@@ -9,8 +9,10 @@ import sejong.capstone.safebattery.enums.PredictionState;
 @Getter
 @Setter
 public class RecordCsvExportDto {
-    @CsvBindByName(column = "power_and_voltage_state")
-    private PredictionState powerVoltageState;
+    @CsvBindByName(column = "power_state")
+    private PredictionState powerState;
+    @CsvBindByName(column = "voltage_state")
+    private PredictionState voltageState;
     @CsvBindByName(column = "temperature_state")
     private PredictionState temperatureState;
     @CsvBindByName(column = "tsec")
@@ -67,7 +69,8 @@ public class RecordCsvExportDto {
     private double lng;
 
     public RecordCsvExportDto(Record r) {
-        this.powerVoltageState = r.getPowerVoltageState();
+        this.powerState = r.getPowerState();
+        this.voltageState = r.getVoltageState();
         this.temperatureState = r.getTemperatureState();
         this.tsec = r.getTsec();
         this.U_totV = r.getU_totV();

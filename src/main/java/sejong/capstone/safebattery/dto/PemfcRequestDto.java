@@ -7,7 +7,8 @@ import java.time.LocalDate;
 @Getter
 public class PemfcRequestDto {
     private Long clientId;
-    private PredictionState powerVoltageState;
+    private PredictionState powerState;
+    private PredictionState voltageState;
     private PredictionState temperatureState;
     private double lat;
     private double lng;

@@ -48,7 +48,7 @@ public class PemfcController {
         }
         Client client = clientService.searchClientById(form.getClientId()).orElseThrow();
         pemfcService.addNewPemfc(
-            new Pemfc(client, form.getPowerVoltageState(), form.getTemperatureState(),
+            new Pemfc(client, form.getPowerState(), form.getVoltageState(), form.getTemperatureState(),
                     form.getLat(), form.getLng(), form.getModelName(), form.getManufacturedDate()));
 
         return ResponseEntity.ok("pemfc가 성공적으로 추가되었습니다.");
@@ -102,8 +102,10 @@ public class PemfcController {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         record.setPemfc(pemfc);
         // 현재 record 값을 토대로 현재 state를 도출
-        record.setPowerVoltageState(getCurrentPowerVoltageState(
-            record.getPW(), record.getU_totV()));
+        record.setPowerState(getCurrentPowerState(
+            record.getPW()));
+        record.setVoltageState(getCurrentVoltageState(
+                record.getPW()));
         record.setTemperatureState(getCurrentTemperatureState(
             record.getT_3()));
         recordService.addNewRecord(record);

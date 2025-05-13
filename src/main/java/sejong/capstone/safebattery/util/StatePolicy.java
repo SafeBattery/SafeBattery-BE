@@ -23,8 +23,14 @@ public class StatePolicy {
                 && temperature < Constants.TEMPERATURE_UPPER_BOUND;
     }
 
-    public static PredictionState getCurrentPowerVoltageState(double power, double voltage) {
-        if (isNormalPower(power) && isNormalVoltage(voltage)) {
+    public static PredictionState getCurrentPowerState(double power) {
+        if (isNormalPower(power)) {
+            return NORMAL;
+        } else return ERROR;
+    }
+
+    public static PredictionState getCurrentVoltageState(double voltage) {
+        if (isNormalVoltage(voltage)) {
             return NORMAL;
         } else return ERROR;
     }

@@ -163,54 +163,54 @@ public class PredictionService {
     private PredictionState classifyVoltagePredictionByValueAndChangeState(
             double voltagePrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
-        if(record.getPowerVoltageState() == NORMAL) {
+        if(record.getVoltageState() == NORMAL) {
             if (isNormalVoltage(voltagePrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
+                if (pemfc.getVoltageState() == NORMAL) {
                     //do nothing
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
+                else if (pemfc.getVoltageState() == WARNING) {
                     // todo : NNW Problem.
                     List<VoltagePrediction> predictions =
                             voltagePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
                     PredictionState result = predictions.stream()
                             .anyMatch(pred -> pred.getState() != NORMAL) ?
                             WARNING : NORMAL;
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), result);
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), result);
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), NORMAL);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                if (pemfc.getVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), WARNING);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
+                else if (pemfc.getVoltageState() == WARNING) {
                     // do nothing
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), WARNING);
                 }
                 return ERROR;
             }
         } else { // record == ERROR
             if (isNormalVoltage(voltagePrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getVoltageState() == WARNING) {
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getVoltageState() == NORMAL) {
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getVoltageState() == WARNING) {
+                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing
@@ -222,54 +222,54 @@ public class PredictionService {
 
     private PredictionState classifyPowerPredictionByValueAndChangeState(double powerPrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
-        if(record.getPowerVoltageState() == NORMAL) {
+        if(record.getPowerState() == NORMAL) {
             if (isNormalPower(powerPrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
+                if (pemfc.getPowerState() == NORMAL) {
                     //do nothing
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
+                else if (pemfc.getPowerState() == WARNING) {
                     // todo : NNW Problem.
                     List<PowerPrediction> predictions =
                             powerPredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
                     PredictionState result = predictions.stream()
                             .anyMatch(pred -> pred.getState() != NORMAL) ?
                             WARNING : NORMAL;
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), result);
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), result);
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), NORMAL);
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), NORMAL);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                if (pemfc.getPowerState() == NORMAL) {
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), WARNING);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
+                else if (pemfc.getPowerState() == WARNING) {
                     // do nothing
                 }
                 else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), WARNING);
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), WARNING);
                 }
                 return ERROR;
             }
         } else { // record == ERROR
             if (isNormalPower(powerPrediction)) {
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getPowerState() == NORMAL) {
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getPowerState() == WARNING) {
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing
                 }
                 return NORMAL;
             } else { // prediction == ERROR
-                if (pemfc.getPowerVoltageState() == NORMAL) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                if (pemfc.getPowerState() == NORMAL) {
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), ERROR);
                 }
-                else if (pemfc.getPowerVoltageState() == WARNING) {
-                    pemfcService.updatePemfcPowerVoltageStateById(pemfc.getId(), ERROR);
+                else if (pemfc.getPowerState() == WARNING) {
+                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), ERROR);
                 }
                 else { // pemfc == ERROR
                     //do nothing

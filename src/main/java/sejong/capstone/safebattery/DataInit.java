@@ -22,7 +22,6 @@ public class DataInit {
     private final RecordRepository recordRepository;
     private final PemfcRepository pemfcRepository;
     private final ClientRepository clientRepository;
-    private final PredictionRepository predictionRepository;
     private final VoltagePredictionRepository voltagePredictionRepository;
     private final PowerPredictionRepository powerPredictionRepository;
     private final TemperaturePredictionRepository temperaturePredictionRepository;
@@ -42,7 +41,6 @@ public class DataInit {
             recordRepository.deleteAll();
             pemfcRepository.deleteAll();
             clientRepository.deleteAll();
-            predictionRepository.deleteAll();
 
             Client client = new Client("Gildong Hong");
             Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));

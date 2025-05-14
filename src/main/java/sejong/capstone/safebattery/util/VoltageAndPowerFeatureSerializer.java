@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import sejong.capstone.safebattery.dto.VoltageAndPowerFeature;
+import sejong.capstone.safebattery.dto.ai.VoltageAndPowerFeature;
 
 public class VoltageAndPowerFeatureSerializer extends JsonSerializer<VoltageAndPowerFeature> {
     //        double iA,

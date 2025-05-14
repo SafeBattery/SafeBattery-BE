@@ -12,7 +12,7 @@ import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.PemfcRequestDto;
 import sejong.capstone.safebattery.dto.PemfcResponseDto;
-import sejong.capstone.safebattery.dto.PredictionDto;
+import sejong.capstone.safebattery.dto.PreditionResponseDto;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
 import sejong.capstone.safebattery.service.ClientService;
 import sejong.capstone.safebattery.service.PemfcService;
@@ -125,17 +125,20 @@ public class PemfcController {
     }
 
     @GetMapping("/{pemfcId}/predictions/voltage")
-    public ResponseEntity<List<PredictionDto>> getVoltagePredictions(@PathVariable Long pemfcId) {
-        return ResponseEntity.ok(predictionService.getVoltagePredictions(pemfcId).stream().map(PredictionDto::fromEntity).toList());
+    public ResponseEntity<List<PreditionResponseDto>> getVoltagePredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getVoltagePredictions(pemfcId).stream().map(
+            PreditionResponseDto::fromEntity).toList());
     }
 
     @GetMapping("/{pemfcId}/predictions/power")
-    public ResponseEntity<List<PredictionDto>> getPowerPredictions(@PathVariable Long pemfcId) {
-        return ResponseEntity.ok(predictionService.getPowerPredictions(pemfcId).stream().map(PredictionDto::fromEntity).toList());
+    public ResponseEntity<List<PreditionResponseDto>> getPowerPredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getPowerPredictions(pemfcId).stream().map(
+            PreditionResponseDto::fromEntity).toList());
     }
 
     @GetMapping("/{pemfcId}/predictions/temperature")
-    public ResponseEntity<List<PredictionDto>> getTemperaturePredictions(@PathVariable Long pemfcId) {
-        return ResponseEntity.ok(predictionService.getTemperaturePredictions(pemfcId).stream().map(PredictionDto::fromEntity).toList());
+    public ResponseEntity<List<PreditionResponseDto>> getTemperaturePredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getTemperaturePredictions(pemfcId).stream().map(
+            PreditionResponseDto::fromEntity).toList());
     }
 }

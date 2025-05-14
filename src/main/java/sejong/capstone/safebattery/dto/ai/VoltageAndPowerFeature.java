@@ -1,4 +1,4 @@
-package sejong.capstone.safebattery.dto;
+package sejong.capstone.safebattery.dto.ai;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import sejong.capstone.safebattery.domain.Record;

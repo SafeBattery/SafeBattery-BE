@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import sejong.capstone.safebattery.dto.TemperatureFeature;
+import sejong.capstone.safebattery.dto.ai.TemperatureFeature;
 
 public class TemperatureFeatureSerializer extends JsonSerializer<TemperatureFeature> {
 

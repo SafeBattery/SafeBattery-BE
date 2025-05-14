@@ -172,14 +172,10 @@ public class PredictionService {
                     //do nothing
                 } else if (pemfc.getVoltageState() == WARNING) {
                     // todo : NNW Problem.
-                    List<VoltagePrediction> predictions =
-                        voltagePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
-                    PredictionState result = predictions.stream()
-                        .anyMatch(pred -> pred.getState() != NORMAL) ?
-                        WARNING : NORMAL;
-                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), result);
+                    solveNNProblem(pemfc);
                 } else { // pemfc == ERROR
-                    pemfcService.updatePemfcVoltageStateById(pemfc.getId(), NORMAL);
+                    // todo : NNE Problem.
+                    solveNNProblem(pemfc);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
@@ -224,14 +220,10 @@ public class PredictionService {
                     //do nothing
                 } else if (pemfc.getPowerState() == WARNING) {
                     // todo : NNW Problem.
-                    List<PowerPrediction> predictions =
-                        powerPredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
-                    PredictionState result = predictions.stream()
-                        .anyMatch(pred -> pred.getState() != NORMAL) ?
-                        WARNING : NORMAL;
-                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), result);
+                    solveNNProblem(pemfc);
                 } else { // pemfc == ERROR
-                    pemfcService.updatePemfcPowerStateById(pemfc.getId(), NORMAL);
+                    // todo : NNE Problem.
+                    solveNNProblem(pemfc);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
@@ -276,14 +268,10 @@ public class PredictionService {
                     //do nothing
                 } else if (pemfc.getTemperatureState() == WARNING) {
                     // todo : NNW Problem.
-                    List<TemperaturePrediction> predictions =
-                        temperaturePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
-                    PredictionState result = predictions.stream()
-                        .anyMatch(pred -> pred.getState() != NORMAL) ?
-                        WARNING : NORMAL;
-                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), result);
+                    solveNNProblem(pemfc);
                 } else { // pemfc == ERROR
-                    pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), NORMAL);
+                    // todo : NNE Problem.
+                    solveNNProblem(pemfc);
                 }
                 return NORMAL;
             } else { // prediction == ERROR
@@ -317,6 +305,15 @@ public class PredictionService {
                 return ERROR;
             }
         }
+    }
+
+    private void solveNNProblem(Pemfc pemfc) {
+        List<VoltagePrediction> predictions =
+                voltagePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+        PredictionState result = predictions.stream()
+                .anyMatch(pred -> pred.getState() != NORMAL) ?
+                WARNING : NORMAL;
+        pemfcService.updatePemfcVoltageStateById(pemfc.getId(), result);
     }
 
     public List<VoltagePrediction> getVoltagePredictions(long pemfcId) {

@@ -15,11 +15,4 @@ public class ServerExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body("AI 서버와 통신 중 에러 발생 : " + e.getMessage());
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleOtherExceptions(Exception e) {
-        log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("서버 오류 발생");
-    }
 }

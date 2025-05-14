@@ -90,7 +90,7 @@ public class PemfcController {
     /**
      * 현재 pemfc의 고장 상태를 예측, 실제 예측 정보를 가져와서 고장 유형에 따라 전류, 전압, 온도?로 나누어 저장하기
      */
-    @PostMapping("/{pemfcId}/prediction")
+    @PostMapping("/{pemfcId}/record")
     public ResponseEntity<String> addNewRecordAndGetPrediction(@PathVariable Long pemfcId,
         @Valid @RequestBody Record record, BindingResult bindingResult) {
 

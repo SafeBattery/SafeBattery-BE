@@ -6,7 +6,11 @@ import sejong.capstone.safebattery.domain.TemperaturePrediction;
 
 import java.util.List;
 
-public interface TemperaturePredictionRepository extends JpaRepository<TemperaturePrediction, Long> {
+public interface TemperaturePredictionRepository extends
+    JpaRepository<TemperaturePrediction, Long> {
+
     //특정 pemfc의 가장 최근 tsec을 가진 100개의 PowerPrediction들을 반환
     List<TemperaturePrediction> findTop100ByPemfcOrderByTsecDesc(Pemfc pemfc);
+
+    List<TemperaturePrediction> findAllByPemfcId(long pemfcId);
 }

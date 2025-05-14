@@ -8,6 +8,7 @@ import lombok.ToString;
 import sejong.capstone.safebattery.enums.PredictionState;
 
 import java.time.LocalDate;
+import sejong.capstone.safebattery.util.PredictionStateConverter;
 
 @Entity
 @Getter
@@ -22,9 +23,14 @@ public class Pemfc {
     @ManyToOne(fetch = FetchType.LAZY) // 여러 pemfc - 하나의 클라이언트
     //@JoinColumn(name = "client_id") //생략 가능
     private Client client;
-
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState powerState;
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState voltageState;
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState temperatureState;
     private double lat;
     private double lng;

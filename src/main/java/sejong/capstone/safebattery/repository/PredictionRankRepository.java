@@ -20,7 +20,7 @@ public class PredictionRankRepository<T extends BasePrediction> {
     private final JdbcTemplate jdbcTemplate;
     private final PemfcRepository pemfcRepository;
     private final Class<T> domainClassType;
-    private final long recordSize = 50;
+    private final long recordSize = 100;
     private final String sql = """
         WITH limited_preds AS (
                      SELECT

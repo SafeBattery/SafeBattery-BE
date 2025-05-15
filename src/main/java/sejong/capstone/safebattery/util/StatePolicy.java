@@ -8,6 +8,19 @@ import static sejong.capstone.safebattery.enums.PredictionState.*;
 
 @Component
 public class StatePolicy {
+
+    public static boolean isNormal(PredictionState state) {
+        return state == NORMAL;
+    }
+
+    public static boolean isWarning(PredictionState state) {
+        return state == WARNING;
+    }
+
+    public static boolean isError(PredictionState state) {
+        return state == ERROR;
+    }
+
     public static boolean isNormalVoltage(double voltage) {
         return voltage > Constants.VOLTAGE_LOWER_BOUND
                 && voltage < Constants.VOLTAGE_UPPER_BOUND;

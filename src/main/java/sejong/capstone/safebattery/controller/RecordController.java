@@ -20,7 +20,7 @@ public class RecordController {
     private final RecordService service;
 
     @PostMapping("/")
-    public RecordResponseDto createNewRecord(@Valid @ModelAttribute Record record,
+    public RecordResponseDto createNewRecord(@Valid @RequestBody Record record,
                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //  todo : 결측치 발생 시 수행 로직 추가

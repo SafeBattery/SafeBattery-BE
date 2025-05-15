@@ -41,7 +41,7 @@ public class PemfcController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> addNewPemfc(@Valid @ModelAttribute PemfcRequestDto form,
+    public ResponseEntity<String> addNewPemfc(@Valid @RequestBody PemfcRequestDto form,
         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //결측치 발생 시 수행 로직 추가...

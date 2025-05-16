@@ -37,9 +37,10 @@ public class PredictionService {
     private final PowerPredictionRepository powerPredictionRepository;
     private final TemperaturePredictionRepository temperaturePredictionRepository;
     private final WebClient AIServerWebClient;
-    private final String VoltageAndPowerPredictionUrl = "/predict_and_explain/UtotV_and_PW";
-    private final String TemperaturePredictionUrl = "/predict_and_explain/T3";
     private final PemfcService pemfcService;
+    private final String PREDICTION_URL = "/predict";
+    private final String VOLTAGE_AND_POWER_MODEL_TYPE = "PWU";
+    private final String TEMPERATURE_MODEL_TYPE = "T3";
 
     /**
      * 600개의 record를 ai서버로 전송하여 prediction을 획득. 획득한 prediction은 데이터베이스에 저장한다.
@@ -56,6 +57,7 @@ public class PredictionService {
         // todo:
         //  2. 요청이 실패하는 경우에 대한 예외처리 필요함.
         VoltageAndPowerRequestDto requestDto1 = new VoltageAndPowerRequestDto(
+            VOLTAGE_AND_POWER_MODEL_TYPE,
             voltageAndPowerFeatures, new double[]{
             VOLTAGE_LOWER_BOUND, VOLTAGE_UPPER_BOUND,
             POWER_LOWER_BOUND, POWER_UPPER_BOUND
@@ -64,7 +66,8 @@ public class PredictionService {
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
 
         TemperaturePredictionRequestDto requestDto2 = new TemperaturePredictionRequestDto(
-            temperatureFeatures, new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
+            TEMPERATURE_MODEL_TYPE, temperatureFeatures,
+            new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
         TemperaturePredictionResponseDto temperaturePredictionResponseDto =
             this.requestTemperaturePredictionToAIServer(requestDto2);
 
@@ -95,7 +98,7 @@ public class PredictionService {
     private VoltageAndPowerResponseDto requestVoltageAndPowerPredictionToAIServer(
         VoltageAndPowerRequestDto requestDto) {
         try {
-            return AIServerWebClient.post().uri(VoltageAndPowerPredictionUrl).bodyValue(requestDto)
+            return AIServerWebClient.post().uri(PREDICTION_URL).bodyValue(requestDto)
                 .exchangeToMono(response -> {
                     if (response.statusCode().is2xxSuccessful()) {
                         // 성공 응답 처리
@@ -122,7 +125,7 @@ public class PredictionService {
     private TemperaturePredictionResponseDto requestTemperaturePredictionToAIServer(
         TemperaturePredictionRequestDto requestDto) {
         try {
-            return AIServerWebClient.post().uri(TemperaturePredictionUrl).bodyValue(requestDto)
+            return AIServerWebClient.post().uri(PREDICTION_URL).bodyValue(requestDto)
                 .exchangeToMono(response -> {
                     if (response.statusCode().is2xxSuccessful()) {
                         // 성공 응답 처리

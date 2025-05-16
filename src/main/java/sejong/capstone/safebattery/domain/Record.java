@@ -2,6 +2,8 @@ package sejong.capstone.safebattery.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import sejong.capstone.safebattery.enums.PredictionState;
 
 @Getter
@@ -17,6 +19,7 @@ public class Record {
 
     @ManyToOne(fetch = FetchType.LAZY) // 여러 row - 하나의 pemfc
     //@JoinColumn(name = "pemfc_id") //생략 가능
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Pemfc pemfc;
 
     private PredictionState powerState;

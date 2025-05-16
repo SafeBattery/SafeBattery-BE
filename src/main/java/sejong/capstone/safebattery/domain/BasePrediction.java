@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.util.PredictionStateConverter;
 
@@ -28,6 +30,7 @@ public class BasePrediction {
 
     @ManyToOne(fetch = FetchType.LAZY) // 여러 prediction - 하나의 pemfc
     //@JoinColumn(name = "pemfc_id") //생략 가능
+    @OnDelete(action = OnDeleteAction.CASCADE)
     protected Pemfc pemfc;
 
     protected double tsec;

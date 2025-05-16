@@ -29,31 +29,25 @@ public class DataInit {
 
     @EventListener(ApplicationReadyEvent.class)
     public void dataInit() {
+        //data.sql에 있는 sql들을 모두 실행한 후 실행되는 초기화 코드입니다.
         // output stream 저장
         PrintStream originalOut = System.out;
         try {
             // SQL 로그 끄기
             System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
 
-            voltagePredictionRepository.deleteAll();
-            powerPredictionRepository.deleteAll();
-            temperaturePredictionRepository.deleteAll();
-            recordRepository.deleteAll();
-            pemfcRepository.deleteAll();
-            clientRepository.deleteAll();
-
             Client client = new Client("Gildong Hong");
-            Pemfc pemfc = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
-            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
-            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
+            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 1, 1));
+            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "testPemfc-001", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
-            pemfcRepository.save(pemfc);
             pemfcRepository.save(pemfc1);
             pemfcRepository.save(pemfc2);
+            pemfcRepository.save(pemfc3);
 
-            recordService.add600RowsFromCsv(pemfc.getId());
             recordService.add600RowsFromCsv(pemfc1.getId());
             recordService.add600RowsFromCsv(pemfc2.getId());
+            recordService.add600RowsFromCsv(pemfc3.getId());
             // 로그 기능 복원
             System.setOut(originalOut);
             log.info("Data initialization : completed.");

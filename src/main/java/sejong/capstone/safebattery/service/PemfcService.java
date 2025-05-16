@@ -53,4 +53,10 @@ public class PemfcService {
         Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
         pemfcRepository.delete(pemfc);
     }
+
+    public void updatePemfcLocation(Long id, double lat, double lng) {
+        Pemfc pemfc = pemfcRepository.findById(id).orElseThrow();
+        pemfc.setLat(lat);
+        pemfc.setLng(lng);
+    }
 }

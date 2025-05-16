@@ -101,6 +101,9 @@ public class PemfcController {
         }
 
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        //pemfc 위치 최신화
+        pemfcService.updatePemfcLocation(pemfcId, record.getLat(), record.getLng());
+
         record.setPemfc(pemfc);
         // 현재 record 값을 토대로 현재 state를 도출
         record.setPowerState(getCurrentPowerState(
@@ -110,14 +113,14 @@ public class PemfcController {
         record.setTemperatureState(getCurrentTemperatureState(
             record.getT_3()));
         recordService.addNewRecord(record);
-        log.info("added record : {}", record);
+        //log.info("added record : {}", record);
 
         if (recordService.countRecordsByPemfc(pemfc) > 600) {
             List<Record> aiServerRequestData = recordService.search600RecordsByPemfc(pemfc);
             //  todo : 여기서 해당 pemfc의 state값이 업데이트되어야 함
-            log.info("aiServerRequestData send");
+            //log.info("aiServerRequestData send");
             predictionService.createPredictionsAndChangeState(aiServerRequestData);
-            log.info("prediction created");
+            //log.info("prediction created");
             return ResponseEntity.ok("record와 prediction이 추가되었습니다.");
         } else {
             return ResponseEntity.ok("record가 추가되었습니다.");

@@ -67,7 +67,10 @@ public class DataInit {
                     }
                     vpMaskData.add(row);
                 }
-                VoltagePowerDynamask vpDynamask = new VoltagePowerDynamask(0.0, pemfc, vpMaskData);
+                VoltagePowerDynamask vpDynamask = VoltagePowerDynamask.builder()
+                        .tsec(0.0)
+                        .pemfc(pemfc)
+                        .value(vpMaskData).build();
                 voltagePowerDynamaskRepository.save(vpDynamask);
 
                 List<List<Double>> tempMaskData = new ArrayList<>();
@@ -78,14 +81,17 @@ public class DataInit {
                     }
                     tempMaskData.add(row);
                 }
-                TemperatureDynamask tempDynamask = new TemperatureDynamask(0.0, pemfc, tempMaskData);
+                TemperatureDynamask tempDynamask = TemperatureDynamask.builder()
+                        .tsec(0.0)
+                        .pemfc(pemfc)
+                        .value(tempMaskData).build();
                 temperatureDynamaskRepository.save(tempDynamask);
             }
 
             // 로그 기능 복원
             System.setOut(originalOut);
             log.info("Data initialization : completed.");
-        } catch(Exception e) {
+        } catch (Exception e) {
             // 로그 기능 복원 후 에러 스택 출력
             System.setOut(originalOut);
             e.printStackTrace();

@@ -278,10 +278,10 @@ public class PredictionService {
     private void addVoltagePowerDynamaskIfPresent(VoltageAndPowerResponseDto response, Record record) {
         if (response.masks() != null) {
             Pemfc pemfc = record.getPemfc();
-            VoltagePowerDynamask dynamask = new VoltagePowerDynamask(
-                    record.getTsec(),
-                    pemfc,
-                    response.masks());
+            VoltagePowerDynamask dynamask = VoltagePowerDynamask.builder()
+                    .tsec(record.getTsec())
+                    .pemfc(pemfc)
+                    .value(response.masks()).build();
             dynamaskService.addNewVoltagePowerDynamask(dynamask);
         }
     }
@@ -289,10 +289,10 @@ public class PredictionService {
     private void addTemperatureDynamaskIfPresent(TemperaturePredictionResponseDto response, Record record) {
         if (response.masks() != null) {
             Pemfc pemfc = record.getPemfc();
-            TemperatureDynamask dynamask = new TemperatureDynamask(
-                    record.getTsec(),
-                    pemfc,
-                    response.masks());
+            TemperatureDynamask dynamask = TemperatureDynamask.builder()
+                    .tsec(record.getTsec())
+                    .pemfc(pemfc)
+                    .value(response.masks()).build();
             dynamaskService.addNewTemperatureDynamask(dynamask);
         }
     }

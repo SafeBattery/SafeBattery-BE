@@ -9,10 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
-import sejong.capstone.safebattery.dto.PemfcRequestDto;
-import sejong.capstone.safebattery.dto.PemfcResponseDto;
-import sejong.capstone.safebattery.dto.PredictionResponseDto;
-import sejong.capstone.safebattery.dto.RecordResponseDto;
+import sejong.capstone.safebattery.dto.*;
 import sejong.capstone.safebattery.service.*;
 
 import java.util.List;
@@ -143,16 +140,16 @@ public class PemfcController {
     }
 
     @GetMapping("/{pemfcId}/dynamask/voltagepower/recent")
-    public ResponseEntity<VoltagePowerDynamask> getRecentVoltagePowerDynamask(@PathVariable Long pemfcId) {
+    public ResponseEntity<DynamaskDto> getRecentVoltagePowerDynamask(@PathVariable Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         VoltagePowerDynamask dynamask = dynamaskService.searchRecentVoltagePowerDynamask(pemfc).orElseThrow();
-        return ResponseEntity.ok(dynamask);
+        return ResponseEntity.ok(DynamaskDto.fromEntity(dynamask));
     }
 
     @GetMapping("/{pemfcId}/dynamask/temperature/recent")
-    public ResponseEntity<TemperatureDynamask> getRecentTemperatureDynamask(@PathVariable Long pemfcId) {
+    public ResponseEntity<DynamaskDto> getRecentTemperatureDynamask(@PathVariable Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         TemperatureDynamask dynamask = dynamaskService.searchRecentTemperatureDynamask(pemfc).orElseThrow();
-        return ResponseEntity.ok(dynamask);
+        return ResponseEntity.ok(DynamaskDto.fromEntity(dynamask));
     }
 }

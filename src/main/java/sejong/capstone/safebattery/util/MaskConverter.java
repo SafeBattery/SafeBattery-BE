@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.*;
 
 @Slf4j
+@Converter
 public class MaskConverter implements AttributeConverter<List<List<Double>>, String> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

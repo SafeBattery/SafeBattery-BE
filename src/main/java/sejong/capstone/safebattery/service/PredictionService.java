@@ -38,6 +38,7 @@ public class PredictionService {
     private final TemperaturePredictionRepository temperaturePredictionRepository;
     private final WebClient AIServerWebClient;
     private final PemfcService pemfcService;
+    private final DynamaskService dynamaskService;
     private final String PREDICTION_URL = "/predict";
     private final String VOLTAGE_AND_POWER_MODEL_TYPE = "PWU";
     private final String TEMPERATURE_MODEL_TYPE = "T3";
@@ -62,21 +63,24 @@ public class PredictionService {
             VOLTAGE_LOWER_BOUND, VOLTAGE_UPPER_BOUND,
             POWER_LOWER_BOUND, POWER_UPPER_BOUND
         });
+        TemperaturePredictionRequestDto requestDto2 = new TemperaturePredictionRequestDto(
+                TEMPERATURE_MODEL_TYPE, temperatureFeatures,
+                new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
+        //voltage, power : 응답 받기
         VoltageAndPowerResponseDto voltageAndPowerResponseDto =
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
-
-        TemperaturePredictionRequestDto requestDto2 = new TemperaturePredictionRequestDto(
-            TEMPERATURE_MODEL_TYPE, temperatureFeatures,
-            new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
+        //temp : 응답 받기
         TemperaturePredictionResponseDto temperaturePredictionResponseDto =
             this.requestTemperaturePredictionToAIServer(requestDto2);
 
         // 3. 결과 저장
         // todo: 예측값을 보고 PredictionState를 정하는 로직이 필요함.
         Record record = records.get(0);
-        // 여기서 Pemfc의 State 수정이 이루어짐
+        // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
         this.savePredictionsAndChangeState(
             voltageAndPowerResponseDto, temperaturePredictionResponseDto, record);
+        addVoltagePowerDynamaskIfPresent(voltageAndPowerResponseDto, record);
+        addTemperatureDynamaskIfPresent(temperaturePredictionResponseDto, record);
     }
 
     private List<VoltageAndPowerFeature> extractVoltageAndPowerFeaturesFromRecords(
@@ -267,6 +271,28 @@ public class PredictionService {
 
     public List<TemperaturePrediction> getTemperaturePredictions(long pemfcId) {
         return temperaturePredictionRepository.findAllByPemfcId(pemfcId);
+    }
+
+    private void addVoltagePowerDynamaskIfPresent(VoltageAndPowerResponseDto response, Record record) {
+        if (response.masks() != null) {
+            Pemfc pemfc = record.getPemfc();
+            VoltagePowerDynamask dynamask = new VoltagePowerDynamask(
+                    record.getTsec(),
+                    pemfc,
+                    response.masks());
+            dynamaskService.addNewVoltagePowerDynamask(dynamask);
+        }
+    }
+
+    private void addTemperatureDynamaskIfPresent(TemperaturePredictionResponseDto response, Record record) {
+        if (response.masks() != null) {
+            Pemfc pemfc = record.getPemfc();
+            TemperatureDynamask dynamask = new TemperatureDynamask(
+                    record.getTsec(),
+                    pemfc,
+                    response.masks());
+            dynamaskService.addNewTemperatureDynamask(dynamask);
+        }
     }
 }
 

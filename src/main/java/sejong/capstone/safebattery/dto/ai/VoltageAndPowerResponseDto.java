@@ -6,7 +6,7 @@ import sejong.capstone.safebattery.domain.PowerPrediction;
 import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.domain.VoltagePrediction;
 
-public record VoltageAndPowerResponseDto(List<List<Double>> masks, List<Double> prediction) {
+public record VoltageAndPowerResponseDto(List<List<Double>> mask, List<Double> prediction) {
 
     public VoltagePrediction toVoltagePrediction(Pemfc pemfc, double tsec, PredictionState predictionState) {
         return VoltagePrediction.builder()

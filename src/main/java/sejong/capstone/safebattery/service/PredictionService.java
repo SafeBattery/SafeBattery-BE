@@ -12,13 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.dto.ai.*;
 import sejong.capstone.safebattery.enums.PredictionState;
-import sejong.capstone.safebattery.dto.ai.TemperatureFeature;
-import sejong.capstone.safebattery.dto.ai.TemperaturePredictionRequestDto;
-import sejong.capstone.safebattery.dto.ai.TemperaturePredictionResponseDto;
-import sejong.capstone.safebattery.dto.ai.VoltageAndPowerFeature;
-import sejong.capstone.safebattery.dto.ai.VoltageAndPowerRequestDto;
-import sejong.capstone.safebattery.dto.ai.VoltageAndPowerResponseDto;
 import sejong.capstone.safebattery.exception.AiServerException;
 import sejong.capstone.safebattery.repository.PowerPredictionRepository;
 import sejong.capstone.safebattery.repository.TemperaturePredictionRepository;
@@ -55,17 +50,13 @@ public class PredictionService {
             = this.extractTemperatureFeaturesFromRecords(records);
 
         // 2. 요청
-        // todo:
-        //  2. 요청이 실패하는 경우에 대한 예외처리 필요함.
-        VoltageAndPowerRequestDto requestDto1 = new VoltageAndPowerRequestDto(
-            VOLTAGE_AND_POWER_MODEL_TYPE,
-            voltageAndPowerFeatures, new double[]{
-            VOLTAGE_LOWER_BOUND, VOLTAGE_UPPER_BOUND,
-            POWER_LOWER_BOUND, POWER_UPPER_BOUND
-        });
-        TemperaturePredictionRequestDto requestDto2 = new TemperaturePredictionRequestDto(
-                TEMPERATURE_MODEL_TYPE, temperatureFeatures,
-                new double[]{TEMPERATURE_LOWER_BOUND, TEMPERATURE_UPPER_BOUND});
+        PredictionRequestDto<VoltageAndPowerFeature> requestDto1 = new PredictionRequestDto<>(
+                VOLTAGE_AND_POWER_MODEL_TYPE,
+                voltageAndPowerFeatures);
+        PredictionRequestDto<TemperatureFeature> requestDto2 = new PredictionRequestDto<>(
+                TEMPERATURE_MODEL_TYPE,
+                temperatureFeatures);
+
         //voltage, power : 응답 받기
         VoltageAndPowerResponseDto voltageAndPowerResponseDto =
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
@@ -102,7 +93,7 @@ public class PredictionService {
      * 전압(U_totV)과 전력(PW)에 대한 예측값 요청
      */
     private VoltageAndPowerResponseDto requestVoltageAndPowerPredictionToAIServer(
-        VoltageAndPowerRequestDto requestDto) {
+        PredictionRequestDto<? extends ModelFeature> requestDto) {
         try {
             return AIServerWebClient.post().uri(PREDICTION_URL).bodyValue(requestDto)
                 .exchangeToMono(response -> {
@@ -129,7 +120,7 @@ public class PredictionService {
      * 온도(T3)에 대한 예측값 요청
      */
     private TemperaturePredictionResponseDto requestTemperaturePredictionToAIServer(
-        TemperaturePredictionRequestDto requestDto) {
+        PredictionRequestDto<? extends ModelFeature>  requestDto) {
         try {
             return AIServerWebClient.post().uri(PREDICTION_URL).bodyValue(requestDto)
                 .exchangeToMono(response -> {
@@ -276,23 +267,23 @@ public class PredictionService {
     }
 
     private void addVoltagePowerDynamaskIfPresent(VoltageAndPowerResponseDto response, Record record) {
-        if (response.masks() != null) {
+        if (response.mask() != null) {
             Pemfc pemfc = record.getPemfc();
             VoltagePowerDynamask dynamask = VoltagePowerDynamask.builder()
                     .tsec(record.getTsec())
                     .pemfc(pemfc)
-                    .value(response.masks()).build();
+                    .value(response.mask()).build();
             dynamaskService.addNewVoltagePowerDynamask(dynamask);
         }
     }
 
     private void addTemperatureDynamaskIfPresent(TemperaturePredictionResponseDto response, Record record) {
-        if (response.masks() != null) {
+        if (response.mask() != null) {
             Pemfc pemfc = record.getPemfc();
             TemperatureDynamask dynamask = TemperatureDynamask.builder()
                     .tsec(record.getTsec())
                     .pemfc(pemfc)
-                    .value(response.masks()).build();
+                    .value(response.mask()).build();
             dynamaskService.addNewTemperatureDynamask(dynamask);
         }
     }

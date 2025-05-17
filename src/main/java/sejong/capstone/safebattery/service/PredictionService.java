@@ -118,7 +118,7 @@ public class PredictionService {
                     }
                 }).block();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new AiServerException("AI 서버에 전압/전력 예측값 요청 중 예외 발생", e);
         }
     }
@@ -145,7 +145,7 @@ public class PredictionService {
                     }
                 }).block();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new AiServerException("AI 서버에 온도 예측값 요청 중 예외 발생", e);
         }
     }

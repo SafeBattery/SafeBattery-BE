@@ -7,17 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import sejong.capstone.safebattery.domain.Client;
-import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.PemfcRequestDto;
 import sejong.capstone.safebattery.dto.PemfcResponseDto;
 import sejong.capstone.safebattery.dto.PredictionResponseDto;
 import sejong.capstone.safebattery.dto.RecordResponseDto;
-import sejong.capstone.safebattery.service.ClientService;
-import sejong.capstone.safebattery.service.PemfcService;
-import sejong.capstone.safebattery.service.PredictionService;
-import sejong.capstone.safebattery.service.RecordService;
+import sejong.capstone.safebattery.service.*;
 
 import java.util.List;
 
@@ -33,6 +29,7 @@ public class PemfcController {
     private final PemfcService pemfcService;
     private final RecordService recordService;
     private final PredictionService predictionService;
+    private final DynamaskService dynamaskService;
 
     @GetMapping("{pemfcId}")
     public PemfcResponseDto getPemfcById(@PathVariable("pemfcId") Long pemfcId) {
@@ -117,7 +114,7 @@ public class PemfcController {
 
         if (recordService.countRecordsByPemfc(pemfc) > 600) {
             List<Record> aiServerRequestData = recordService.search600RecordsByPemfc(pemfc);
-            //  todo : 여기서 해당 pemfc의 state값이 업데이트되어야 함
+            //  todo : 여기서 해당 pemfc의 state값이 업데이트되어야 함. dynamask도 여기서 저장됨
             //log.info("aiServerRequestData send");
             predictionService.createPredictionsAndChangeState(aiServerRequestData);
             //log.info("prediction created");
@@ -143,5 +140,19 @@ public class PemfcController {
     public ResponseEntity<List<PredictionResponseDto>> getTemperaturePredictions(@PathVariable Long pemfcId) {
         return ResponseEntity.ok(predictionService.getTemperaturePredictions(pemfcId).stream().map(
             PredictionResponseDto::fromEntity).toList());
+    }
+
+    @GetMapping("/{pemfcId}/dynamask/voltagepower/recent")
+    public ResponseEntity<VoltagePowerDynamask> getRecentVoltagePowerDynamask(@PathVariable Long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        VoltagePowerDynamask dynamask = dynamaskService.searchRecentVoltagePowerDynamask(pemfc).orElseThrow();
+        return ResponseEntity.ok(dynamask);
+    }
+
+    @GetMapping("/{pemfcId}/dynamask/temperature/recent")
+    public ResponseEntity<TemperatureDynamask> getRecentTemperatureDynamask(@PathVariable Long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
+        TemperatureDynamask dynamask = dynamaskService.searchRecentTemperatureDynamask(pemfc).orElseThrow();
+        return ResponseEntity.ok(dynamask);
     }
 }

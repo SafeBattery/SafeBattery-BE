@@ -3,6 +3,7 @@ package sejong.capstone.safebattery.service;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.TemperatureDynamask;
 import sejong.capstone.safebattery.domain.VoltagePowerDynamask;
 import sejong.capstone.safebattery.repository.TemperatureDynamaskRepository;
@@ -25,11 +26,19 @@ public class DynamaskService {
         return vpDynamaskRepository.findById(id);
     }
 
+    public Optional<VoltagePowerDynamask> searchRecentVoltagePowerDynamask(Pemfc pemfc) {
+        return vpDynamaskRepository.findTopByPemfcOrderByTsecDesc(pemfc);
+    }
+
     public TemperatureDynamask addNewTemperatureDynamask(TemperatureDynamask dynamask) {
         return tempDynamaskRepository.save(dynamask);
     }
 
     public Optional<TemperatureDynamask> searchTemperatureDynamaskById(Long id) {
         return tempDynamaskRepository.findById(id);
+    }
+
+    public Optional<TemperatureDynamask> searchRecentTemperatureDynamask(Pemfc pemfc) {
+        return tempDynamaskRepository.findTopByPemfcOrderByTsecDesc(pemfc);
     }
 }

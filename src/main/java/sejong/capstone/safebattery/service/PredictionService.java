@@ -79,7 +79,9 @@ public class PredictionService {
         // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
         this.savePredictionsAndChangeState(
             voltageAndPowerResponseDto, temperaturePredictionResponseDto, record);
+        // dynamask가 있으면 db에 저장
         addVoltagePowerDynamaskIfPresent(voltageAndPowerResponseDto, record);
+        // dynamask가 있으면 db에 저장
         addTemperatureDynamaskIfPresent(temperaturePredictionResponseDto, record);
     }
 

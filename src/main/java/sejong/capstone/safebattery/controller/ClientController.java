@@ -32,6 +32,12 @@ public class ClientController {
                 PemfcResponseDto::new).toList();
     }
 
+    @GetMapping("/{clientId}/name")
+    public ResponseEntity<String> getNameOfClient(@PathVariable("clientId") Long clientId) {
+        Client client = clientService.searchClientById(clientId).orElseThrow();
+        return ResponseEntity.ok(client.getName());
+    }
+
     @GetMapping("/{clientId}/pemfc/{pemfcId}")
     public PemfcResponseDto getPemfcOfClientByPemfcId(
             @PathVariable("clientId") Long clientId,

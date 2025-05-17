@@ -7,12 +7,16 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
+import sejong.capstone.safebattery.domain.TemperatureDynamask;
+import sejong.capstone.safebattery.domain.VoltagePowerDynamask;
 import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.RecordService;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
+import java.util.*;
+
 import static sejong.capstone.safebattery.enums.PredictionState.NORMAL;
 
 @Slf4j
@@ -25,6 +29,8 @@ public class DataInit {
     private final VoltagePredictionRepository voltagePredictionRepository;
     private final PowerPredictionRepository powerPredictionRepository;
     private final TemperaturePredictionRepository temperaturePredictionRepository;
+    private final VoltagePowerDynamaskRepository voltagePowerDynamaskRepository;
+    private final TemperatureDynamaskRepository temperatureDynamaskRepository;
     private final RecordService recordService;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -51,6 +57,31 @@ public class DataInit {
             recordService.add600RowsFromCsv(pemfc1.getId());
             recordService.add600RowsFromCsv(pemfc2.getId());
             recordService.add600RowsFromCsv(pemfc3.getId());
+
+            for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
+                List<List<Double>> vpMaskData = new ArrayList<>();
+                for (int i = 0; i < 600; i++) {
+                    List<Double> row = new ArrayList<>();
+                    for (int j = 0; j < 9; j++) {
+                        row.add(Math.round(Math.random() * 10) / 10.0); // 소수점 6자리
+                    }
+                    vpMaskData.add(row);
+                }
+                VoltagePowerDynamask vpDynamask = new VoltagePowerDynamask(0.0, pemfc, vpMaskData);
+                voltagePowerDynamaskRepository.save(vpDynamask);
+
+                List<List<Double>> tempMaskData = new ArrayList<>();
+                for (int i = 0; i < 600; i++) {
+                    List<Double> row = new ArrayList<>();
+                    for (int j = 0; j < 4; j++) {
+                        row.add(Math.round(Math.random() * 10) / 10.0); // 소수점 6자리
+                    }
+                    tempMaskData.add(row);
+                }
+                TemperatureDynamask tempDynamask = new TemperatureDynamask(0.0, pemfc, tempMaskData);
+                temperatureDynamaskRepository.save(tempDynamask);
+            }
+
             // 로그 기능 복원
             System.setOut(originalOut);
             log.info("Data initialization : completed.");

@@ -54,16 +54,16 @@ public class DataInit {
             Pemfc pemfc2 = pemfcRepository.findById(2L).orElseThrow();
             Pemfc pemfc3 = pemfcRepository.findById(3L).orElseThrow();
 
-            recordService.add600RowsFromCsv(pemfc1.getId());
-            recordService.add600RowsFromCsv(pemfc2.getId());
-            recordService.add600RowsFromCsv(pemfc3.getId());
+            recordService.add600RowsFromCsv(pemfc1.getId(), 0);
+            recordService.add600RowsFromCsv(pemfc2.getId(), 1000);
+            recordService.add600RowsFromCsv(pemfc3.getId(), 2000);
 
             for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
                 List<List<Double>> vpMaskData = new ArrayList<>();
                 for (int i = 0; i < 600; i++) {
                     List<Double> row = new ArrayList<>();
                     for (int j = 0; j < 9; j++) {
-                        row.add(Math.round(Math.random() * 10) / 10.0); // 소수점 6자리
+                        row.add(Math.round(Math.random() * 10) / 10.0);
                     }
                     vpMaskData.add(row);
                 }
@@ -77,7 +77,7 @@ public class DataInit {
                 for (int i = 0; i < 600; i++) {
                     List<Double> row = new ArrayList<>();
                     for (int j = 0; j < 4; j++) {
-                        row.add(Math.round(Math.random() * 10) / 10.0); // 소수점 6자리
+                        row.add(Math.round(Math.random() * 10) / 10.0);
                     }
                     tempMaskData.add(row);
                 }

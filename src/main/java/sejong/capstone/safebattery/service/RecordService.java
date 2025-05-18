@@ -51,7 +51,7 @@ public class RecordService {
         return recordRepository.countByPemfc(pemfc);
     }
 
-    public void add600RowsFromCsv(Long pemfcId) throws IOException {
+    public void add600RowsFromCsv(Long pemfcId, int start) throws IOException {
         Pemfc pemfc = pemfcRepository.findById(pemfcId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
 
@@ -66,6 +66,7 @@ public class RecordService {
                 .build();
 
         List<Record> records = csvToBean.stream()
+                .skip(start)
                 .limit(600)
                 .map(dto -> dto.convert(pemfc))
                 .toList();

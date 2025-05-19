@@ -51,9 +51,9 @@ public class DataInit {
             Pemfc pemfc2 = pemfcRepository.findById(2L).orElseThrow();
             Pemfc pemfc3 = pemfcRepository.findById(3L).orElseThrow();
 
-            recordService.add3000RowsFromCsv(pemfc1.getId(), 0);
-            recordService.add3000RowsFromCsv(pemfc2.getId(), 10000);
-            recordService.add3000RowsFromCsv(pemfc3.getId(), 20000);
+            recordService.add3000RowsFromCsv(pemfc1.getId(), 17000);
+            recordService.add3000RowsFromCsv(pemfc2.getId(), 22180);
+            recordService.add3000RowsFromCsv(pemfc3.getId(), 26520);
 
             for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
                 List<List<Double>> vpMaskData = new ArrayList<>();

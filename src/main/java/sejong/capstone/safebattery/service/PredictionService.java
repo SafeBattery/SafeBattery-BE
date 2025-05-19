@@ -42,39 +42,39 @@ public class PredictionService {
      */
 
     public void createPredictionsAndChangeState(List<Record> records) {
+
+        Record record = records.get(0);
         // 1. 정보 추출
         List<VoltageAndPowerFeature> voltageAndPowerFeatures
             = this.extractVoltageAndPowerFeaturesFromRecords(records);
-        List<TemperatureFeature> temperatureFeatures
-            = this.extractTemperatureFeaturesFromRecords(records);
-
         // 2. 요청
         PredictionRequestDto<VoltageAndPowerFeature> requestDto1 = new PredictionRequestDto<>(
                 VOLTAGE_AND_POWER_MODEL_TYPE,
                 voltageAndPowerFeatures);
-        PredictionRequestDto<TemperatureFeature> requestDto2 = new PredictionRequestDto<>(
-                TEMPERATURE_MODEL_TYPE,
-                temperatureFeatures);
-
-        Record record = records.get(0);
-
-        //voltage, power : 응답 받기
+        // 3. voltage, power : 응답 받기
         VoltageAndPowerResponseDto voltageAndPowerResponseDto =
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
-        // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
+        // 4. prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
         this.saveVoltageAndPowerPredictionsAndChangeState(
                 voltageAndPowerResponseDto, record);
-        // dynamask가 있으면 db에 저장
+        // 5. dynamask가 있으면 db에 저장
         addVoltagePowerDynamaskIfPresent(voltageAndPowerResponseDto, record);
 
         if (record.getRecordNumber() % 5 == 0) {
-            //temp : 응답 받기
+            // 1. 정보 추출
+            List<TemperatureFeature> temperatureFeatures
+                    = this.extractTemperatureFeaturesFromRecords(records);
+            // 2. 요청
+            PredictionRequestDto<TemperatureFeature> requestDto2 = new PredictionRequestDto<>(
+                    TEMPERATURE_MODEL_TYPE,
+                    temperatureFeatures);
+            // 3. temp : 응답 받기
             TemperaturePredictionResponseDto temperaturePredictionResponseDto =
                     this.requestTemperaturePredictionToAIServer(requestDto2);
-            // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
+            // 4. prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
             this.saveTemperaturePredictionsAndChangeState(
                     temperaturePredictionResponseDto, record);
-            // dynamask가 있으면 db에 저장
+            // 5. dynamask가 있으면 db에 저장
             addTemperatureDynamaskIfPresent(temperaturePredictionResponseDto, record);
         }
     }

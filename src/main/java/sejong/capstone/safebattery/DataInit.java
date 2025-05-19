@@ -14,10 +14,7 @@ import sejong.capstone.safebattery.service.RecordService;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.time.LocalDate;
 import java.util.*;
-
-import static sejong.capstone.safebattery.enums.PredictionState.NORMAL;
 
 @Slf4j
 @Component
@@ -54,9 +51,9 @@ public class DataInit {
             Pemfc pemfc2 = pemfcRepository.findById(2L).orElseThrow();
             Pemfc pemfc3 = pemfcRepository.findById(3L).orElseThrow();
 
-            recordService.add600RowsFromCsv(pemfc1.getId(), 0);
-            recordService.add600RowsFromCsv(pemfc2.getId(), 1000);
-            recordService.add600RowsFromCsv(pemfc3.getId(), 2000);
+            recordService.add3000RowsFromCsv(pemfc1.getId(), 0);
+            recordService.add3000RowsFromCsv(pemfc2.getId(), 10000);
+            recordService.add3000RowsFromCsv(pemfc3.getId(), 20000);
 
             for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
                 List<List<Double>> vpMaskData = new ArrayList<>();
@@ -94,7 +91,7 @@ public class DataInit {
         } catch (Exception e) {
             // 로그 기능 복원 후 에러 스택 출력
             System.setOut(originalOut);
-            e.printStackTrace();
+            log.error("Data init error", e);
         }
     }
 }

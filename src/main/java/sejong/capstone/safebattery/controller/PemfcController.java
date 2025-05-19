@@ -68,7 +68,7 @@ public class PemfcController {
     public List<RecordResponseDto> getRecent600RecordsOfPemfc(
         @PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        return recordService.search600RecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
+        return recordService.search3000RecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
             .toList();
     }
 
@@ -109,8 +109,8 @@ public class PemfcController {
         recordService.addNewRecord(record);
         log.info("added record : {}", record);
 
-        if (recordService.countRecordsByPemfc(pemfc) > 600) {
-            List<Record> aiServerRequestData = recordService.search600RecordsByPemfc(pemfc);
+        if (recordService.countRecordsByPemfc(pemfc) > 3000) {
+            List<Record> aiServerRequestData = recordService.search3000RecordsByPemfc(pemfc);
             //  todo : 여기서 해당 pemfc의 state값이 업데이트되어야 함. dynamask도 여기서 저장됨
             log.info("aiServerRequestData send");
             predictionService.createPredictionsAndChangeState(aiServerRequestData);

@@ -1,7 +1,6 @@
 package sejong.capstone.safebattery.dto;
 
 import lombok.Getter;
-import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.enums.PredictionState;
 
@@ -38,6 +37,7 @@ public class RecordResponseDto {
     private double i_write;
     private double lat;
     private double lng;
+    private int recordNumber;
 
 
     public RecordResponseDto() {}
@@ -73,6 +73,7 @@ public class RecordResponseDto {
         this.i_write = record.getI_write();
         this.lat = record.getLat();
         this.lng = record.getLng();
+        this.recordNumber = record.getRecordNumber();
     }
 }
 

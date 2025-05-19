@@ -67,6 +67,8 @@ public class RecordCsvExportDto {
     private double lat;
     @CsvBindByName(column = "lng")
     private double lng;
+    @CsvBindByName(column = "row_number")
+    private int recordNumber;
 
     public RecordCsvExportDto(Record r) {
         this.powerState = r.getPowerState();
@@ -98,5 +100,6 @@ public class RecordCsvExportDto {
         this.i_write = r.getI_write();
         this.lat = r.getLat();
         this.lng = r.getLng();
+        this.recordNumber = r.getRecordNumber();
     }
 }

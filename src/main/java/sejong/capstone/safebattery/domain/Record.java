@@ -52,6 +52,7 @@ public class Record {
     private double i_write;
     private double lat;
     private double lng;
+    private int recordNumber;
 
     public Record() {
     }
@@ -62,7 +63,7 @@ public class Record {
                   double p_H2_inlet, double t_1, double t_2, double t_3, double t_4, double t_Air_inlet,
                   double t_H2_inlet, double t_Stack_inlet, double t_Heater, double m_Air_write,
                   double m_H2_write, int heater_power, double i_write,
-                  double lat, double lng) {
+                  double lat, double lng, int recordNumber) {
         this.pemfc = pemfc;
         this.powerState = powerState;
         this.voltageState = voltageState;
@@ -93,5 +94,6 @@ public class Record {
         this.i_write = i_write;
         this.lat = lat;
         this.lng = lng;
+        this.recordNumber = recordNumber;
     }
 }

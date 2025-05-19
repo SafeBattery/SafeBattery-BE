@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
 import sejong.capstone.safebattery.domain.Record;
-import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.repository.ClientRepository;
 import sejong.capstone.safebattery.repository.PemfcRepository;
 import sejong.capstone.safebattery.repository.RecordRepository;
@@ -43,7 +42,7 @@ public class RecordRepositoryTest {
         0.96, 0.556, 1.059, 0.677,
                 14.691, -64762.981, 34.011, 14.584,
                 29.724, 18.663, 42.509,
-        64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+        64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368, 0);
 
         //when
         Pemfc savedPemfc = pemfcRepository.save(pemfc);
@@ -64,7 +63,7 @@ public class RecordRepositoryTest {
                 0.96, 0.556, 1.059, 0.677,
                 14.691, -64762.981, 34.011, 14.584,
                 29.724, 18.663, 42.509,
-                64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+                64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368,0);
         Record savedRecord = recordRepository.save(record);
 
         //when
@@ -84,9 +83,9 @@ public class RecordRepositoryTest {
         Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
-        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
-        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
-        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
+        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368,0);
+        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638,0);
+        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392,0);
 
         //when
         clientRepository.save(client);
@@ -112,13 +111,13 @@ public class RecordRepositoryTest {
         clientRepository.save(client);
         pemfcRepository.save(pemfc);
         for(int i = 0; i < 700; i++) {
-            Record newRecord = new Record(pemfc, NORMAL, NORMAL, NORMAL, (double) i, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
+            Record newRecord = new Record(pemfc, NORMAL, NORMAL, NORMAL, (double) i, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368, 0);
             recordRepository.save(newRecord);
         }
 
         //then
         //System.out.println(recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc).toString());
-        assertThat(recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc).size()).isEqualTo(600);
+        assertThat(recordRepository.findTop3000ByPemfcOrderByTsecDesc(pemfc).size()).isEqualTo(600);
     }
 
     @Test
@@ -129,9 +128,9 @@ public class RecordRepositoryTest {
         Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34,127, "testPemfc-001", LocalDate.of(2025, 1, 1));
         Pemfc savedPemfc1 = pemfcRepository.save(pemfc1);
         Pemfc savedPemfc2 = pemfcRepository.save(pemfc2);
-        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368);
-        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638);
-        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392);
+        Record record1 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 1.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624299, 127.276368, 0);
+        Record record2 = new Record(pemfc1, NORMAL, NORMAL, NORMAL, 2.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.4624184, 127.27638, 0);
+        Record record3 = new Record(pemfc2, NORMAL, NORMAL, NORMAL, 3.047, 0.956, 0.112, 0.107, 7.749, 1.052, 94.016, 100.098, 0.96, 0.556, 1.059, 0.677, 14.691, -64762.981, 34.011, 14.584, 29.724, 18.663, 42.509, 64.992, 0.024, 0.002, 0, 0, 36.462407, 127.276392, 0);
 
         //when
         clientRepository.save(client);

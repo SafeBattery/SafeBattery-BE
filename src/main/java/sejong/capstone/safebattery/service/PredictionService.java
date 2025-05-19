@@ -19,7 +19,6 @@ import sejong.capstone.safebattery.repository.PowerPredictionRepository;
 import sejong.capstone.safebattery.repository.TemperaturePredictionRepository;
 import sejong.capstone.safebattery.repository.VoltagePredictionRepository;
 
-import static sejong.capstone.safebattery.Constants.*;
 import static sejong.capstone.safebattery.enums.PredictionState.*;
 import static sejong.capstone.safebattery.util.StatePolicy.*;
 
@@ -57,28 +56,32 @@ public class PredictionService {
                 TEMPERATURE_MODEL_TYPE,
                 temperatureFeatures);
 
+        Record record = records.get(0);
+
         //voltage, power : 응답 받기
         VoltageAndPowerResponseDto voltageAndPowerResponseDto =
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
-        //temp : 응답 받기
-        TemperaturePredictionResponseDto temperaturePredictionResponseDto =
-            this.requestTemperaturePredictionToAIServer(requestDto2);
-
-        // 3. 결과 저장
-        // todo: 예측값을 보고 PredictionState를 정하는 로직이 필요함.
-        Record record = records.get(0);
         // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
-        this.savePredictionsAndChangeState(
-            voltageAndPowerResponseDto, temperaturePredictionResponseDto, record);
+        this.saveVoltageAndPowerPredictionsAndChangeState(
+                voltageAndPowerResponseDto, record);
         // dynamask가 있으면 db에 저장
         addVoltagePowerDynamaskIfPresent(voltageAndPowerResponseDto, record);
-        // dynamask가 있으면 db에 저장
-        addTemperatureDynamaskIfPresent(temperaturePredictionResponseDto, record);
+
+        if (record.getRecordNumber() % 5 == 0) {
+            //temp : 응답 받기
+            TemperaturePredictionResponseDto temperaturePredictionResponseDto =
+                    this.requestTemperaturePredictionToAIServer(requestDto2);
+            // prediction 저장. 여기서 Pemfc의 State 수정도 같이 이루어짐
+            this.saveTemperaturePredictionsAndChangeState(
+                    temperaturePredictionResponseDto, record);
+            // dynamask가 있으면 db에 저장
+            addTemperatureDynamaskIfPresent(temperaturePredictionResponseDto, record);
+        }
     }
 
     private List<VoltageAndPowerFeature> extractVoltageAndPowerFeaturesFromRecords(
         List<Record> records) {
-        return IntStream.range(0, records.size()).mapToObj(i -> {
+        return IntStream.range(0, 600).mapToObj(i -> {
             Record current = records.get(i);
             double iA_diff = (i > 0) ? current.getIA() - records.get(i - 1).getIA() : 0;
             return VoltageAndPowerFeature.fromEntity(current, iA_diff);
@@ -86,8 +89,13 @@ public class PredictionService {
     }
 
     private List<TemperatureFeature> extractTemperatureFeaturesFromRecords(List<Record> records) {
-        return records.stream().map(TemperatureFeature::fromEntity).toList();
+        return IntStream.range(0, 600)
+                .map(i -> 5 * i)  // 0, 5, 10, ..., 2995
+                .filter(i -> i < records.size())  // index 초과 방지
+                .mapToObj(i -> TemperatureFeature.fromEntity(records.get(i)))
+                .toList();
     }
+
 
     /**
      * 전압(U_totV)과 전력(PW)에 대한 예측값 요청
@@ -143,16 +151,13 @@ public class PredictionService {
         }
     }
 
-    private void savePredictionsAndChangeState(
+    private void saveVoltageAndPowerPredictionsAndChangeState(
         VoltageAndPowerResponseDto voltageAndPowerResponseDto,
-        TemperaturePredictionResponseDto temperaturePredictionResponseDto,
         Record record) {
         PredictionState voltagePredictionState = this.classifyVoltagePredictionByValueAndChangeState(
             voltageAndPowerResponseDto.getVoltagePrediction(), record);
         PredictionState powerPredictionState = this.classifyPowerPredictionByValueAndChangeState(
             voltageAndPowerResponseDto.getPowerPrediction(), record);
-        PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValueAndChangeState(
-            temperaturePredictionResponseDto.getTemperaturePrediction(), record);
 
         voltagePredictionRepository.save(
             voltageAndPowerResponseDto.toVoltagePrediction(record.getPemfc(), record.getTsec(),
@@ -160,9 +165,16 @@ public class PredictionService {
         powerPredictionRepository.save(
             voltageAndPowerResponseDto.toPowerPrediction(record.getPemfc(), record.getTsec(),
                 powerPredictionState));
+    }
+
+    private void saveTemperaturePredictionsAndChangeState(
+            TemperaturePredictionResponseDto temperaturePredictionResponseDto,
+            Record record) {
+        PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValueAndChangeState(
+                temperaturePredictionResponseDto.getTemperaturePrediction(), record);
         temperaturePredictionRepository.save(
-            temperaturePredictionResponseDto.toEntity(record.getPemfc(), record.getTsec(),
-                temperaturePredictionState));
+                temperaturePredictionResponseDto.toEntity(record.getPemfc(), record.getTsec(),
+                        temperaturePredictionState));
     }
 
     private PredictionState classifyVoltagePredictionByValueAndChangeState(
@@ -223,7 +235,7 @@ public class PredictionService {
         if (isNormal(record.getTemperatureState())) { // record == NORMAL
             if (isNormalTemperature(temperaturePrediction)) { // prediction == NORMAL
                 if (!isNormal(pemfc.getTemperatureState())) // pemfc != NORMAL
-                    solveNNProblem(pemfc, temperaturePredictionRepository::findTop100ByPemfcOrderByTsecDesc, TemperaturePrediction::getState, state -> pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), state));
+                    solveNNProblem(pemfc, temperaturePredictionRepository::findTop500ByPemfcOrderByTsecDesc, TemperaturePrediction::getState, state -> pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), state));
                 return NORMAL;
             } else { // prediction == ERROR
                 if (!isWarning(pemfc.getTemperatureState())) // pemfc != WARNING

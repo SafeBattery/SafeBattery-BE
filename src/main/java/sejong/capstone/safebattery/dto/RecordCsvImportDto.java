@@ -61,6 +61,8 @@ public class RecordCsvImportDto {
     private double lat;
     @CsvBindByName(column = "lng")
     private double lng;
+    @CsvBindByName(column = "record_number")
+    private int recordNumber;
 
     public Record convert(Pemfc pemfc) {
         return new Record(
@@ -68,7 +70,7 @@ public class RecordCsvImportDto {
                 PredictionState.NORMAL, tsec, U_totV, iA, PW, m_Air, m_H2, RH_Air, RH_H2,
                 P_Air_supply, P_H2_supply, P_Air_inlet, P_H2_inlet,
                 T_1, T_2, T_3, T_4, T_Air_inlet, T_H2_inlet, T_Stack_inlet, T_Heater,
-                m_Air_write, m_H2_write, Heater_power, i_write, lat, lng
+                m_Air_write, m_H2_write, Heater_power, i_write, lat, lng, recordNumber
         );
     }
 }

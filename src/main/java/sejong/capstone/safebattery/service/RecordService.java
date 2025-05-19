@@ -42,8 +42,8 @@ public class RecordService {
         return recordRepository.findAllByPemfc(pemfc);
     }
 
-    public List<Record> search600RecordsByPemfc(Pemfc pemfc) {
-        return recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc);
+    public List<Record> search3000RecordsByPemfc(Pemfc pemfc) {
+        return recordRepository.findTop3000ByPemfcOrderByTsecDesc(pemfc);
     }
 
 
@@ -51,7 +51,7 @@ public class RecordService {
         return recordRepository.countByPemfc(pemfc);
     }
 
-    public void add600RowsFromCsv(Long pemfcId, int start) throws IOException {
+    public void add3000RowsFromCsv(Long pemfcId, int start) throws IOException {
         Pemfc pemfc = pemfcRepository.findById(pemfcId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
 
@@ -67,7 +67,7 @@ public class RecordService {
 
         List<Record> records = csvToBean.stream()
                 .skip(start)
-                .limit(600)
+                .limit(3000)
                 .map(dto -> dto.convert(pemfc))
                 .toList();
 

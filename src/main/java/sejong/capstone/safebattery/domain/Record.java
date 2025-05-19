@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import sejong.capstone.safebattery.enums.PredictionState;
+import sejong.capstone.safebattery.util.PredictionStateConverter;
 
 @Getter
 @Setter
@@ -22,8 +23,14 @@ public class Record {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Pemfc pemfc;
 
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState powerState;
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState voltageState;
+    @Column(nullable = false)
+    @Convert(converter = PredictionStateConverter.class)
     private PredictionState temperatureState;
 
     private double tsec;

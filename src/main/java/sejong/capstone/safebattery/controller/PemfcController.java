@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import sejong.capstone.safebattery.Constants;
 import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.*;
@@ -87,7 +88,7 @@ public class PemfcController {
      */
     @PostMapping("/{pemfcId}/record")
     public ResponseEntity<String> addNewRecordAndGetPrediction(@PathVariable Long pemfcId,
-        @Valid @RequestBody Record record, BindingResult bindingResult) {
+        @Valid @RequestBody RecordRequestDto dto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             // 결측치 발생 시 수행 로직 추가...
@@ -96,6 +97,7 @@ public class PemfcController {
 
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
         //pemfc 위치 최신화
+        Record record = dto.toEntity(pemfc);
         pemfcService.updatePemfcLocation(pemfcId, record.getLat(), record.getLng());
 
         record.setPemfc(pemfc);
@@ -103,7 +105,7 @@ public class PemfcController {
         record.setPowerState(getCurrentPowerState(
             record.getPW()));
         record.setVoltageState(getCurrentVoltageState(
-                record.getPW()));
+                record.getU_totV()));
         record.setTemperatureState(getCurrentTemperatureState(
             record.getT_3()));
         recordService.addNewRecord(record);

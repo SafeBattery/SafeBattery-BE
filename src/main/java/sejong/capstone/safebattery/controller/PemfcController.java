@@ -69,7 +69,7 @@ public class PemfcController {
     public List<RecordResponseDto> getRecent600RecordsOfPemfc(
         @PathVariable("pemfcId") Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        return recordService.search3000RecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
+        return recordService.search600RecordsByPemfc(pemfc).stream().map(RecordResponseDto::new)
             .toList();
     }
 

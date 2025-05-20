@@ -46,6 +46,10 @@ public class RecordService {
         return recordRepository.findTop3000ByPemfcOrderByTsecDesc(pemfc);
     }
 
+    public List<Record> search600RecordsByPemfc(Pemfc pemfc) {
+        return recordRepository.findTop600ByPemfcOrderByTsecDesc(pemfc);
+    }
+
 
     public long countRecordsByPemfc(Pemfc pemfc) {
         return recordRepository.countByPemfc(pemfc);

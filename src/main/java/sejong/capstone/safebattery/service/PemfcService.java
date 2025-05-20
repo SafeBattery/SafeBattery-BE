@@ -1,6 +1,7 @@
 package sejong.capstone.safebattery.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sejong.capstone.safebattery.domain.Client;
@@ -12,6 +13,7 @@ import sejong.capstone.safebattery.repository.PemfcRepository;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor

@@ -49,8 +49,7 @@ public class PredictionService {
             = this.extractVoltageAndPowerFeaturesFromRecords(records);
         // 2. 요청
         PredictionRequestDto<VoltageAndPowerFeature> requestDto1 = new PredictionRequestDto<>(
-                VOLTAGE_AND_POWER_MODEL_TYPE,
-                voltageAndPowerFeatures);
+                VOLTAGE_AND_POWER_MODEL_TYPE, voltageAndPowerFeatures);
         // 3. voltage, power : 응답 받기
         VoltageAndPowerResponseDto voltageAndPowerResponseDto =
             this.requestVoltageAndPowerPredictionToAIServer(requestDto1);
@@ -60,7 +59,7 @@ public class PredictionService {
         // 5. dynamask가 있으면 db에 저장
         addVoltagePowerDynamaskIfPresent(voltageAndPowerResponseDto, record);
 
-        if (record.getRecordNumber() % 5 == 0) {
+        if (record.getRecordNumber() % 5 == 1) {
             // 1. 정보 추출
             List<TemperatureFeature> temperatureFeatures
                     = this.extractTemperatureFeaturesFromRecords(records);
@@ -81,7 +80,7 @@ public class PredictionService {
 
     private List<VoltageAndPowerFeature> extractVoltageAndPowerFeaturesFromRecords(
         List<Record> records) {
-        return IntStream.range(0, 600).mapToObj(i -> {
+        return IntStream.range(0, 600).map(i -> 599 - i).mapToObj(i -> {
             Record current = records.get(i);
             double iA_diff = (i > 0) ? current.getIA() - records.get(i - 1).getIA() : 0;
             return VoltageAndPowerFeature.fromEntity(current, iA_diff);
@@ -89,7 +88,7 @@ public class PredictionService {
     }
 
     private List<TemperatureFeature> extractTemperatureFeaturesFromRecords(List<Record> records) {
-        return IntStream.range(0, 600)
+        return IntStream.range(0, 600).map(i -> 599 - i)
                 .map(i -> 5 * i)  // 0, 5, 10, ..., 2995
                 .filter(i -> i < records.size())  // index 초과 방지
                 .mapToObj(i -> TemperatureFeature.fromEntity(records.get(i)))
@@ -180,6 +179,11 @@ public class PredictionService {
     private PredictionState classifyVoltagePredictionByValueAndChangeState(
         double voltagePrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
+//        log.info("===classifyVoltagePredictionByValueAndChangeState===");
+//        log.info("record number : {}",record.getRecordNumber());
+//        log.info("record state: {}", record.getVoltageState());
+//        log.info("prediction state: {}", getCurrentVoltageState(voltagePrediction));
+//        log.info("prev pemfc state: {}", pemfc.getVoltageState());
         if (isNormal(record.getVoltageState())) { // record == NORMAL
             if (isNormalVoltage(voltagePrediction)) { // prediction == NORMAL
                 if (!isNormal(pemfc.getVoltageState())) // pemfc != NORMAL
@@ -232,6 +236,12 @@ public class PredictionService {
     private PredictionState classifyTemperaturePredictionByValueAndChangeState(
         double temperaturePrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
+        log.info("===classifyTemperaturePredictionByValueAndChangeState===");
+        log.info("record number : {}",record.getRecordNumber());
+        log.info("record state: {}", record.getTemperatureState());
+        log.info("prediction state: {}", getCurrentTemperatureState(temperaturePrediction));
+        log.info("prev pemfc state: {}", pemfc.getTemperatureState());
+        log.info("prediction : {}", temperaturePrediction);
         if (isNormal(record.getTemperatureState())) { // record == NORMAL
             if (isNormalTemperature(temperaturePrediction)) { // prediction == NORMAL
                 if (!isNormal(pemfc.getTemperatureState())) // pemfc != NORMAL

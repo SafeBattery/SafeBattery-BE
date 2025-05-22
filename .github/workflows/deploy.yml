@@ -36,6 +36,7 @@ jobs:
           echo "DB_URL=jdbc:mysql://${{ secrets.MYSQL_URL }}:3306/safe_battery?serverTimezone=Asia/Seoul" >> .env
           echo "DB_USERNAME=${{ secrets.MYSQL_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "AI_SERVER_URL=${{ secrets.AI_SERVER_URL }}" >> .env
 
 #      - name: Prepare deployment artifact
 #        run: |

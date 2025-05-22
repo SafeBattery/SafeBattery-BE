@@ -1,17 +1,27 @@
 package sejong.capstone.safebattery.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
+import sejong.capstone.safebattery.dto.PredictionCsvImportDto;
+import sejong.capstone.safebattery.dto.RecordCsvImportDto;
 import sejong.capstone.safebattery.dto.ai.*;
 import sejong.capstone.safebattery.enums.PredictionState;
 import sejong.capstone.safebattery.exception.AiServerException;
@@ -169,7 +179,8 @@ public class PredictionService {
     private void saveTemperaturePredictionsAndChangeState(
             TemperaturePredictionResponseDto temperaturePredictionResponseDto,
             Record record) {
-        PredictionState temperaturePredictionState = this.classifyTemperaturePredictionByValueAndChangeState(
+        PredictionState temperaturePredictionState =
+                this.classifyTemperaturePredictionByValueAndChangeState(
                 temperaturePredictionResponseDto.getTemperaturePrediction(), record);
         temperaturePredictionRepository.save(
                 temperaturePredictionResponseDto.toEntity(record.getPemfc(), record.getTsec(),
@@ -236,12 +247,12 @@ public class PredictionService {
     private PredictionState classifyTemperaturePredictionByValueAndChangeState(
         double temperaturePrediction, Record record) {
         Pemfc pemfc = record.getPemfc();
-        log.info("===classifyTemperaturePredictionByValueAndChangeState===");
-        log.info("record number : {}",record.getRecordNumber());
-        log.info("record state: {}", record.getTemperatureState());
-        log.info("prediction state: {}", getCurrentTemperatureState(temperaturePrediction));
-        log.info("prev pemfc state: {}", pemfc.getTemperatureState());
-        log.info("prediction : {}", temperaturePrediction);
+//        log.info("===classifyTemperaturePredictionByValueAndChangeState===");
+//        log.info("record number : {}",record.getRecordNumber());
+//        log.info("record state: {}", record.getTemperatureState());
+//        log.info("prediction state: {}", getCurrentTemperatureState(temperaturePrediction));
+//        log.info("prev pemfc state: {}", pemfc.getTemperatureState());
+//        log.info("prediction : {}", temperaturePrediction);
         if (isNormal(record.getTemperatureState())) { // record == NORMAL
             if (isNormalTemperature(temperaturePrediction)) { // prediction == NORMAL
                 if (!isNormal(pemfc.getTemperatureState())) // pemfc != NORMAL
@@ -308,6 +319,72 @@ public class PredictionService {
                     .value(response.mask()).build();
             dynamaskService.addNewTemperatureDynamask(dynamask);
         }
+    }
+
+    public void addVoltagePredictionRowsFromCsv(String csv, Long pemfcId) throws IOException {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
+
+        // classpath 기준 리소스 접근
+        InputStream inputStream = new ClassPathResource(csv).getInputStream();
+        Reader reader = new InputStreamReader(inputStream);
+
+        CsvToBean<PredictionCsvImportDto> csvToBean =
+                new CsvToBeanBuilder<PredictionCsvImportDto>(reader)
+                .withType(PredictionCsvImportDto.class)
+                .withIgnoreLeadingWhiteSpace(true)
+                .withSeparator(',')
+                .build();
+
+        List<VoltagePrediction> predictions = csvToBean.stream()
+                .map(dto -> dto.toVoltagePredictionEntity(pemfc))
+                .toList();
+
+        voltagePredictionRepository.saveAll(predictions);
+    }
+
+    public void addPowerPredictionRowsFromCsv(String csv, Long pemfcId) throws IOException {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
+
+        // classpath 기준 리소스 접근
+        InputStream inputStream = new ClassPathResource(csv).getInputStream();
+        Reader reader = new InputStreamReader(inputStream);
+
+        CsvToBean<PredictionCsvImportDto> csvToBean =
+                new CsvToBeanBuilder<PredictionCsvImportDto>(reader)
+                        .withType(PredictionCsvImportDto.class)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withSeparator(',')
+                        .build();
+
+        List<PowerPrediction> predictions = csvToBean.stream()
+                .map(dto -> dto.toPowerPredictionEntity(pemfc))
+                .toList();
+
+        powerPredictionRepository.saveAll(predictions);
+    }
+
+    public void addTemperaturePredictionRowsFromCsv(String csv, Long pemfcId) throws IOException {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid pemfc ID"));
+
+        // classpath 기준 리소스 접근
+        InputStream inputStream = new ClassPathResource(csv).getInputStream();
+        Reader reader = new InputStreamReader(inputStream);
+
+        CsvToBean<PredictionCsvImportDto> csvToBean =
+                new CsvToBeanBuilder<PredictionCsvImportDto>(reader)
+                        .withType(PredictionCsvImportDto.class)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withSeparator(',')
+                        .build();
+
+        List<TemperaturePrediction> predictions = csvToBean.stream()
+                .map(dto -> dto.toTemperaturePredictionEntity(pemfc))
+                .toList();
+
+        temperaturePredictionRepository.saveAll(predictions);
     }
 }
 

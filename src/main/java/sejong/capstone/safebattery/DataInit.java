@@ -53,9 +53,9 @@ public class DataInit {
             pemfcRepository.save(pemfc2);
             pemfcRepository.save(pemfc3);
 
-            recordService.add3000RowsFromCsv(pemfc1.getId(), 20900);
-            recordService.add3000RowsFromCsv(pemfc2.getId(), 26420);
-            recordService.add3000RowsFromCsv(pemfc3.getId(), 22080);
+            recordService.add3000RowsFromCsv(pemfc1.getId(), 21000);
+            recordService.add3000RowsFromCsv(pemfc2.getId(), 26520);
+            recordService.add3000RowsFromCsv(pemfc3.getId(), 22180);
 
             predictionService.addVoltagePredictionRowsFromCsv("pemfc_1_voltage.csv", pemfc1.getId());
             predictionService.addPowerPredictionRowsFromCsv("pemfc_1_power.csv", pemfc1.getId());

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -297,6 +298,24 @@ public class PredictionService {
 
     public List<TemperaturePrediction> getTemperaturePredictions(long pemfcId) {
         return temperaturePredictionRepository.findAllByPemfcId(pemfcId);
+    }
+
+    public List<VoltagePrediction> getRecent100VoltagePredictions(long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow(
+                () -> new NoSuchElementException("Pemfc not found"));
+        return voltagePredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+    }
+
+    public List<PowerPrediction> getRecent100PowerPredictions(long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow(
+                () -> new NoSuchElementException("Pemfc not found"));
+        return powerPredictionRepository.findTop100ByPemfcOrderByTsecDesc(pemfc);
+    }
+
+    public List<TemperaturePrediction> getRecent20TemperaturePredictions(long pemfcId) {
+        Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow(
+                () -> new NoSuchElementException("Pemfc not found"));
+        return temperaturePredictionRepository.findTop20ByPemfcOrderByTsecDesc(pemfc);
     }
 
     private void addVoltagePowerDynamaskIfPresent(VoltageAndPowerResponseDto response, Record record) {

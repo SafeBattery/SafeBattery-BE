@@ -141,6 +141,24 @@ public class PemfcController {
             PredictionResponseDto::fromEntity).toList());
     }
 
+    @GetMapping("/{pemfcId}/predictions/voltage/recent100")
+    public ResponseEntity<List<PredictionResponseDto>> getRecent100VoltagePredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getRecent100VoltagePredictions(pemfcId).stream().map(
+                PredictionResponseDto::fromEntity).toList());
+    }
+
+    @GetMapping("/{pemfcId}/predictions/power/recent100")
+    public ResponseEntity<List<PredictionResponseDto>> getRecent100PowerPredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getRecent100PowerPredictions(pemfcId).stream().map(
+                PredictionResponseDto::fromEntity).toList());
+    }
+
+    @GetMapping("/{pemfcId}/predictions/temperature/recent20")
+    public ResponseEntity<List<PredictionResponseDto>> getRecent20TemperaturePredictions(@PathVariable Long pemfcId) {
+        return ResponseEntity.ok(predictionService.getRecent20TemperaturePredictions(pemfcId).stream().map(
+                PredictionResponseDto::fromEntity).toList());
+    }
+
     @GetMapping("/{pemfcId}/dynamask/voltagepower/recent")
     public ResponseEntity<DynamaskDto> getRecentVoltagePowerDynamask(@PathVariable Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();

@@ -53,6 +53,9 @@ public class DataInit {
             pemfcRepository.save(pemfc2);
             pemfcRepository.save(pemfc3);
 
+//            recordService.add3000RowsFromCsv(pemfc1.getId(), 20900);
+//            recordService.add3000RowsFromCsv(pemfc2.getId(), 26420);
+//            recordService.add3000RowsFromCsv(pemfc3.getId(), 22080);
             recordService.add3000RowsFromCsv(pemfc1.getId(), 21000);
             recordService.add3000RowsFromCsv(pemfc2.getId(), 26520);
             recordService.add3000RowsFromCsv(pemfc3.getId(), 22180);
@@ -66,35 +69,6 @@ public class DataInit {
             predictionService.addVoltagePredictionRowsFromCsv("prediction_pemfc3_voltage.csv", pemfc3.getId());
             predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc3_power.csv", pemfc3.getId());
             predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc3_temp.csv", pemfc3.getId());
-//            for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
-//                List<List<Double>> vpMaskData = new ArrayList<>();
-//                for (int i = 0; i < 600; i++) {
-//                    List<Double> row = new ArrayList<>();
-//                    for (int j = 0; j < 9; j++) {
-//                        row.add(Math.round(Math.random() * 10) / 10.0);
-//                    }
-//                    vpMaskData.add(row);
-//                }
-//                VoltagePowerDynamask vpDynamask = VoltagePowerDynamask.builder()
-//                        .tsec(0.0)
-//                        .pemfc(pemfc)
-//                        .value(vpMaskData).build();
-//                voltagePowerDynamaskRepository.save(vpDynamask);
-//
-//                List<List<Double>> tempMaskData = new ArrayList<>();
-//                for (int i = 0; i < 600; i++) {
-//                    List<Double> row = new ArrayList<>();
-//                    for (int j = 0; j < 4; j++) {
-//                        row.add(Math.round(Math.random() * 10) / 10.0);
-//                    }
-//                    tempMaskData.add(row);
-//                }
-//                TemperatureDynamask tempDynamask = TemperatureDynamask.builder()
-//                        .tsec(0.0)
-//                        .pemfc(pemfc)
-//                        .value(tempMaskData).build();
-//                temperatureDynamaskRepository.save(tempDynamask);
-//            }
 
             // 로그 기능 복원
             System.setOut(originalOut);

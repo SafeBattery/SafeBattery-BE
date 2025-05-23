@@ -162,14 +162,17 @@ public class PemfcController {
     @GetMapping("/{pemfcId}/dynamask/voltagepower/recent")
     public ResponseEntity<DynamaskDto> getRecentVoltagePowerDynamask(@PathVariable Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        VoltagePowerDynamask dynamask = dynamaskService.searchRecentVoltagePowerDynamask(pemfc).orElseThrow();
-        return ResponseEntity.ok(DynamaskDto.fromEntity(dynamask));
+        return dynamaskService.searchRecentVoltagePowerDynamask(pemfc)
+                .map(d -> ResponseEntity.ok(DynamaskDto.fromEntity(d)))
+                .orElse(ResponseEntity.notFound().build()); // dynamask가 없으면 404 반환
     }
 
     @GetMapping("/{pemfcId}/dynamask/temperature/recent")
     public ResponseEntity<DynamaskDto> getRecentTemperatureDynamask(@PathVariable Long pemfcId) {
         Pemfc pemfc = pemfcService.searchPemfcById(pemfcId).orElseThrow();
-        TemperatureDynamask dynamask = dynamaskService.searchRecentTemperatureDynamask(pemfc).orElseThrow();
-        return ResponseEntity.ok(DynamaskDto.fromEntity(dynamask));
+        return dynamaskService.searchRecentTemperatureDynamask(pemfc)
+                .map(d -> ResponseEntity.ok(DynamaskDto.fromEntity(d)))
+                .orElse(ResponseEntity.notFound().build()); // dynamask가 없으면 404 반환
+
     }
 }

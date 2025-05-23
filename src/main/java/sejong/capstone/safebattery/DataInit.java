@@ -57,15 +57,15 @@ public class DataInit {
             recordService.add3000RowsFromCsv(pemfc2.getId(), 26520);
             recordService.add3000RowsFromCsv(pemfc3.getId(), 22180);
 
-            predictionService.addVoltagePredictionRowsFromCsv("pemfc_1_voltage.csv", pemfc1.getId());
-            predictionService.addPowerPredictionRowsFromCsv("pemfc_1_power.csv", pemfc1.getId());
-            predictionService.addTemperaturePredictionRowsFromCsv("pemfc_1_temp.csv", pemfc1.getId());
-            predictionService.addVoltagePredictionRowsFromCsv("pemfc_2_voltage.csv", pemfc2.getId());
-            predictionService.addPowerPredictionRowsFromCsv("pemfc_2_power.csv", pemfc2.getId());
-            predictionService.addTemperaturePredictionRowsFromCsv("pemfc_2_temp.csv", pemfc2.getId());
-            predictionService.addVoltagePredictionRowsFromCsv("pemfc_3_voltage.csv", pemfc3.getId());
-            predictionService.addPowerPredictionRowsFromCsv("pemfc_3_power.csv", pemfc3.getId());
-            predictionService.addTemperaturePredictionRowsFromCsv("pemfc_3_temp.csv", pemfc3.getId());
+            predictionService.addVoltagePredictionRowsFromCsv("prediction_pemfc1_voltage.csv", pemfc1.getId());
+            predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc1_power.csv", pemfc1.getId());
+            predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc1_temp.csv", pemfc1.getId());
+            predictionService.addVoltagePredictionRowsFromCsv("prediction_pemfc2_voltage.csv", pemfc2.getId());
+            predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc2_power.csv", pemfc2.getId());
+            predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc2_temp.csv", pemfc2.getId());
+            predictionService.addVoltagePredictionRowsFromCsv("prediction_pemfc3_voltage.csv", pemfc3.getId());
+            predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc3_power.csv", pemfc3.getId());
+            predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc3_temp.csv", pemfc3.getId());
 //            for (Pemfc pemfc : List.of(pemfc1, pemfc2, pemfc3)) {
 //                List<List<Double>> vpMaskData = new ArrayList<>();
 //                for (int i = 0; i < 600; i++) {

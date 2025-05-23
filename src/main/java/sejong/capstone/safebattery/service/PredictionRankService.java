@@ -20,14 +20,14 @@ public class PredictionRankService {
     private final PredictionRankRepository<TemperaturePrediction> temperaturePredictionRankRepository;
 
     public List<PredictionRank> getVoltagePredictionRanks() {
-        return voltagePredictionRankRepository.getPredictionRanks();
+        return voltagePredictionRankRepository.getPredictionRanks(100);
     }
 
     public List<PredictionRank> getPowerPredictionRanks() {
-        return powerPredictionRankRepository.getPredictionRanks();
+        return powerPredictionRankRepository.getPredictionRanks(100);
     }
 
     public List<PredictionRank> getTemperatureRanks() {
-        return temperaturePredictionRankRepository.getPredictionRanks();
+        return temperaturePredictionRankRepository.getPredictionRanks(20);
     }
 }

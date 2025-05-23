@@ -20,7 +20,6 @@ public class PredictionRankRepository<T extends BasePrediction> {
     private final JdbcTemplate jdbcTemplate;
     private final PemfcRepository pemfcRepository;
     private final Class<T> domainClassType;
-    private final long recordSize = 100;
     private final String sql = """
         WITH limited_preds AS (
                      SELECT
@@ -47,14 +46,14 @@ public class PredictionRankRepository<T extends BasePrediction> {
             errorRate DESC;
         """;
 
-    public List<PredictionRank> getPredictionRanks() {
+    public List<PredictionRank> getPredictionRanks(int recordSize) {
         // todo: recordSize에 대해서 논의 필요
         //  PredictionState.ERROR로 변경하기
-        List<RawPredictionRank> rawPredictionRanks = this.getRawPredictionRanks();
+        List<RawPredictionRank> rawPredictionRanks = this.getRawPredictionRanks(recordSize);
         return this.mapFromRawPredictionRankToPredictionRank(rawPredictionRanks);
     }
 
-    protected List<RawPredictionRank> getRawPredictionRanks() {
+    protected List<RawPredictionRank> getRawPredictionRanks(int recordSize) {
         String formattedSql = this.generateSql();
 
         List<RawPredictionRank> raws = jdbcTemplate.query(formattedSql,

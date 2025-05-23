@@ -256,7 +256,7 @@ public class PredictionService {
         if (isNormal(record.getTemperatureState())) { // record == NORMAL
             if (isNormalTemperature(temperaturePrediction)) { // prediction == NORMAL
                 if (!isNormal(pemfc.getTemperatureState())) // pemfc != NORMAL
-                    solveNNProblem(pemfc, temperaturePredictionRepository::findTop500ByPemfcOrderByTsecDesc, TemperaturePrediction::getState, state -> pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), state));
+                    solveNNProblem(pemfc, temperaturePredictionRepository::findTop20ByPemfcOrderByTsecDesc, TemperaturePrediction::getState, state -> pemfcService.updatePemfcTemperatureStateById(pemfc.getId(), state));
                 return NORMAL;
             } else { // prediction == ERROR
                 if (!isWarning(pemfc.getTemperatureState())) // pemfc != WARNING

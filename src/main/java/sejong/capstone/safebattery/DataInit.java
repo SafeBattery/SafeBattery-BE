@@ -7,42 +7,32 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import sejong.capstone.safebattery.domain.Client;
 import sejong.capstone.safebattery.domain.Pemfc;
-import sejong.capstone.safebattery.domain.TemperatureDynamask;
-import sejong.capstone.safebattery.domain.VoltagePowerDynamask;
 import sejong.capstone.safebattery.repository.*;
 import sejong.capstone.safebattery.service.PredictionService;
 import sejong.capstone.safebattery.service.RecordService;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.time.LocalDate;
-import java.util.*;
 
-import static sejong.capstone.safebattery.enums.PredictionState.NORMAL;
+import static sejong.capstone.safebattery.enums.PredictionState.*;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class DataInit {
-    private final RecordRepository recordRepository;
+//    private final RecordRepository recordRepository;
     private final PemfcRepository pemfcRepository;
     private final ClientRepository clientRepository;
-    private final VoltagePredictionRepository voltagePredictionRepository;
-    private final PowerPredictionRepository powerPredictionRepository;
-    private final TemperaturePredictionRepository temperaturePredictionRepository;
-    private final VoltagePowerDynamaskRepository voltagePowerDynamaskRepository;
-    private final TemperatureDynamaskRepository temperatureDynamaskRepository;
+//    private final VoltagePredictionRepository voltagePredictionRepository;
+//    private final PowerPredictionRepository powerPredictionRepository;
+//    private final TemperaturePredictionRepository temperaturePredictionRepository;
+//    private final VoltagePowerDynamaskRepository voltagePowerDynamaskRepository;
+//    private final TemperatureDynamaskRepository temperatureDynamaskRepository;
     private final RecordService recordService;
     private final PredictionService predictionService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void dataInit() {
-        //data.sql에 있는 sql들을 모두 실행한 후 실행되는 초기화 코드입니다.
-        // output stream 저장
-        PrintStream originalOut = System.out;
         try {
-            // SQL 로그 끄기
-            System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
 
             Client client = new Client("Gildong Hong");
             Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.451354, 127.285213, "Pemfc-001", LocalDate.of(2025, 1, 1));
@@ -53,9 +43,11 @@ public class DataInit {
             pemfcRepository.save(pemfc2);
             pemfcRepository.save(pemfc3);
 
+            // Prediction 초기화 데이터를 얻기 위한 코드
 //            recordService.add3000RowsFromCsv(pemfc1.getId(), 20900);
 //            recordService.add3000RowsFromCsv(pemfc2.getId(), 26420);
 //            recordService.add3000RowsFromCsv(pemfc3.getId(), 22080);
+
             recordService.add3000RowsFromCsv(pemfc1.getId(), 21000);
             recordService.add3000RowsFromCsv(pemfc2.getId(), 26520);
             recordService.add3000RowsFromCsv(pemfc3.getId(), 22180);
@@ -70,12 +62,8 @@ public class DataInit {
             predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc3_power.csv", pemfc3.getId());
             predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc3_temp.csv", pemfc3.getId());
 
-            // 로그 기능 복원
-            System.setOut(originalOut);
             log.info("Data initialization : completed.");
         } catch (Exception e) {
-            // 로그 기능 복원 후 에러 스택 출력
-            System.setOut(originalOut);
             log.error("Data init error", e);
         }
     }

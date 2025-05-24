@@ -45,9 +45,9 @@ public class DataInit {
             System.setOut(new PrintStream(OutputStream.nullOutputStream())); // 출력 끔
 
             Client client = new Client("Gildong Hong");
-            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "Pemfc-001", LocalDate.of(2025, 1, 1));
-            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "Pemfc-002", LocalDate.of(2025, 2, 2));
-            Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 34, 127, "Pemfc-003", LocalDate.of(2025, 3, 3));
+            Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.451354, 127.285213, "Pemfc-001", LocalDate.of(2025, 1, 1));
+            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.4556036, 127.283117, "Pemfc-002", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.4317705, 127.286513, "Pemfc-003", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
             pemfcRepository.save(pemfc1);
             pemfcRepository.save(pemfc2);

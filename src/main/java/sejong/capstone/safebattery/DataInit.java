@@ -36,7 +36,7 @@ public class DataInit {
 
             Client client = new Client("Gildong Hong");
             Pemfc pemfc1 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.451354, 127.285213, "Pemfc-001", LocalDate.of(2025, 1, 1));
-            Pemfc pemfc2 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.4556036, 127.283117, "Pemfc-002", LocalDate.of(2025, 2, 2));
+            Pemfc pemfc2 = new Pemfc(client, WARNING, NORMAL, ERROR, 36.4556036, 127.283117, "Pemfc-002", LocalDate.of(2025, 2, 2));
             Pemfc pemfc3 = new Pemfc(client, NORMAL, NORMAL, NORMAL, 36.4317705, 127.286513, "Pemfc-003", LocalDate.of(2025, 3, 3));
             clientRepository.save(client);
             pemfcRepository.save(pemfc1);
@@ -45,11 +45,11 @@ public class DataInit {
 
             // Prediction 초기화 데이터를 얻기 위한 코드
 //            recordService.add3000RowsFromCsv(pemfc1.getId(), 20900);
-//            recordService.add3000RowsFromCsv(pemfc2.getId(), 26420);
+//            recordService.add3000RowsFromCsv(pemfc2.getId(), 26425);
 //            recordService.add3000RowsFromCsv(pemfc3.getId(), 22080);
 
             recordService.add3000RowsFromCsv(pemfc1.getId(), 21000);
-            recordService.add3000RowsFromCsv(pemfc2.getId(), 26520);
+            recordService.add3000RowsFromCsv(pemfc2.getId(), 26525);
             recordService.add3000RowsFromCsv(pemfc3.getId(), 22180);
 
             predictionService.addVoltagePredictionRowsFromCsv("prediction_pemfc1_voltage.csv", pemfc1.getId());

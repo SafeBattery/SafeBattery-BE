@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import sejong.capstone.safebattery.Constants;
 import sejong.capstone.safebattery.domain.*;
 import sejong.capstone.safebattery.domain.Record;
 import sejong.capstone.safebattery.dto.*;

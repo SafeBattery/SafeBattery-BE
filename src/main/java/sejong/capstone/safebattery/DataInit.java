@@ -62,9 +62,9 @@ public class DataInit {
             predictionService.addPowerPredictionRowsFromCsv("prediction_pemfc3_power.csv", pemfc3.getId());
             predictionService.addTemperaturePredictionRowsFromCsv("prediction_pemfc3_temp.csv", pemfc3.getId());
 
-            double pw = recordService.search600RecordsByPemfc(pemfc1).get(10).getPW();
-            log.info("debugging...{}", 2);
-            log.info("pw : {}", pw);
+//            double pw = recordService.search600RecordsByPemfc(pemfc1).get(10).getPW();
+//            log.info("debugging...{}", 2);
+//            log.info("pw : {}", pw);
 
             log.info("Data initialization : completed.");
         } catch (Exception e) {
